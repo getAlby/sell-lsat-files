@@ -70,7 +70,7 @@ func main() {
 		log.Println(file.Filename)
 
 		// Upload the file to specific dst.
-		err = c.SaveUploadedFile(file, fmt.Sprintf("assets/%s", file.Filename))
+		err = c.SaveUploadedFile(file, fmt.Sprintf("%s/%s", assetDirName, file.Filename))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 		}
