@@ -60,9 +60,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	assetDirName := os.Getenv("ASSET_DIR_NAME")
 
 	paid := router.Group("/assets", lsatmiddleware.Handler, checkLsatPaidHandler)
-	paid.Static("/assets", "./assets").Use()
+	paid.Static("/assets", assetDirName)
 	router.POST("/upload", func(c *gin.Context) {
 		// single file
 		file, _ := c.FormFile("file")
