@@ -6,7 +6,7 @@ require (
 	github.com/getAlby/gin-lsat v0.0.0-20220809140550-6016b32dd596
 	github.com/gin-gonic/gin v1.8.1
 	github.com/joho/godotenv v1.4.0
-	github.com/kiwiidb/gin-lsat v0.0.0-20220810150403-ebedfe2dc463
+	github.com/kiwiidb/gin-lsat v0.0.0-20220811100010-5ce5989e90a7
 	github.com/labstack/gommon v0.3.1
 )
 

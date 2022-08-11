@@ -523,6 +523,8 @@ github.com/kiwiidb/gin-lsat v0.0.0-20220810145145-ac094df75e0c h1:xoRvl4Ew5Djpyl
 github.com/kiwiidb/gin-lsat v0.0.0-20220810145145-ac094df75e0c/go.mod h1:ak1p/d76/VI+cepeeETPqMF1T6kbk0mAEIcBkQIzsPo=
 github.com/kiwiidb/gin-lsat v0.0.0-20220810150403-ebedfe2dc463 h1:ee56DBbCzpOVmfx9fyLTs7LG9++kdmMUC1KcKxSAevQ=
 github.com/kiwiidb/gin-lsat v0.0.0-20220810150403-ebedfe2dc463/go.mod h1:ak1p/d76/VI+cepeeETPqMF1T6kbk0mAEIcBkQIzsPo=
+github.com/kiwiidb/gin-lsat v0.0.0-20220811100010-5ce5989e90a7 h1:CEC5ekTWXPvqBGetADTSdzBsWaQ5kpHxnFvetVY4Ugk=
+github.com/kiwiidb/gin-lsat v0.0.0-20220811100010-5ce5989e90a7/go.mod h1:ak1p/d76/VI+cepeeETPqMF1T6kbk0mAEIcBkQIzsPo=
 github.com/kkdai/bstream v0.0.0-20161212061736-f391b8402d23/go.mod h1:J+Gs4SYgM6CZQHDETBtE9HaSEkGmuNXF86RwHhHUvq4=
 github.com/kkdai/bstream v0.0.0-20181106074824-b3251f7901ec/go.mod h1:J+Gs4SYgM6CZQHDETBtE9HaSEkGmuNXF86RwHhHUvq4=
 github.com/kkdai/bstream v1.0.0 h1:Se5gHwgp2VT2uHfDrkbbgbgEvV9cimLELwrPJctSjg8=
