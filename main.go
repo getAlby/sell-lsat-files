@@ -78,7 +78,7 @@ func main() {
 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 	})
 
-	log.Fatal(router.Run("localhost:8080"))
+	log.Fatal(router.Run(":8080"))
 }
 
 func checkLsatPaidHandler(c *gin.Context) {
