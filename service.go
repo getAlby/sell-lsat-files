@@ -31,7 +31,7 @@ type Service struct {
 	Config *Config
 }
 
-func (svc *Service) Listfiles(c *gin.Context) {
+func (svc *Service) Home(c *gin.Context) {
 	entries := &[]UploadedFileMetadata{}
 	err := svc.DB.Find(entries, &UploadedFileMetadata{}).Error
 	if err != nil {
@@ -41,14 +41,14 @@ func (svc *Service) Listfiles(c *gin.Context) {
 	response := []IndexResponseEntry{}
 	for _, e := range *entries {
 		response = append(response, IndexResponseEntry{
-			URL:       fmt.Sprintf("https://%s/assets/%s", c.Request.Host, e.Name),
+			URL:       fmt.Sprintf("http://%s/assets/%s", c.Request.Host, e.Name),
 			Name:      e.OriginalName,
 			LNAddress: e.LNAddress,
 			Price:     e.Price,
 			Currency:  e.Currency,
 		})
 	}
-	c.JSON(http.StatusOK, response)
+	c.HTML(http.StatusOK, "index.html", gin.H{"Entries": response})
 }
 
 func (svc *Service) Uploadfile(c *gin.Context) {

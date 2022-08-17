@@ -1,0 +1,35 @@
+<html>
+{{ range .Entries }}
+<li>
+	<button onclick="fetchLSAT({{ .URL }})">
+	{{ .Name }}
+	</button>
+<br>
+</li>
+<br>
+<img id="img" width="500" height="600">
+{{ end }}
+<script
+  src="https://unpkg.com/webln@0.2.0/dist/webln.min.js"
+  integrity="sha384-mTReBqbhPO7ljQeIoFaD1NYS2KiYMwFJhUNpdwLj+VIuhhjvHQlZ1XpwzAvd93nQ"
+  crossorigin="anonymous"
+></script>
+<script>
+	async function fetchLSAT(url) {
+	resp = await fetch(url, {headers: {"Accept": "application/vnd.lsat.v1.full"}})
+    const header = resp.headers.get('www-authenticate')
+	// show some information about the lsat
+	parts = header.split(",")
+	mac = parts[0].replace("LSAT macaroon=", "").trimStart()
+	inv = parts[1].replace("invoice=", "").trimStart()
+	webln = await WebLN.requestProvider();
+	await webln.enable()
+	invResp = await webln.sendPayment(inv)
+	resp = await fetch(url, {headers: {"Authorization": `LSAT ${mac}:${invResp.preimage}`}})
+	const blob = await resp.blob();
+  	const objectUrl = URL.createObjectURL(blob);
+  	const imageElement = document.getElementById('img');
+  	imageElement.src = objectUrl;
+}
+</script>
+</html>

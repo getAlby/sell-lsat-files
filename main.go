@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/getAlby/gin-lsat/ginlsat"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
@@ -39,10 +40,15 @@ func main() {
 		return 1
 	}
 
-	paid := router.Group("/assets", lsatmiddleware.Handler, checkLsatPaidHandler)
+	paid := router.Group("/assets", lsatmiddleware.Handler, checkLsatPaidHandler, cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowMethods:    []string{"GET"},
+		AllowHeaders:    []string{"Accept", "Authorization"},
+	}))
 	paid.Static("/", svc.Config.AssetDirName)
 	router.POST("/upload", svc.Uploadfile)
-	router.GET("/index", svc.Listfiles)
+	router.LoadHTMLGlob("static/*.html")
+	router.GET("/", svc.Home)
 
 	log.Fatal(router.Run(":8080"))
 }
