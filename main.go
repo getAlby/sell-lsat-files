@@ -2,87 +2,54 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
+	"github.com/getAlby/gin-lsat/ginlsat"
 	"github.com/gin-gonic/gin"
-	"github.com/kiwiidb/gin-lsat/ginlsat"
-	"github.com/kiwiidb/gin-lsat/ln"
+	"github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
-
-const SATS_PER_BTC = 100000000
-
-const MIN_SATS_TO_BE_PAID = 1
-
-type FiatRateConfig struct {
-	Currency string
-	Amount   float64
-}
-
-func (fr *FiatRateConfig) FiatToBTCAmountFunc(req *http.Request) (amount int64) {
-	if req == nil {
-		return MIN_SATS_TO_BE_PAID
-	}
-	res, err := http.Get(fmt.Sprintf("https://blockchain.info/tobtc?currency=%s&value=%f", fr.Currency, fr.Amount))
-	if err != nil {
-		return MIN_SATS_TO_BE_PAID
-	}
-	defer res.Body.Close()
-
-	amountBits, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return MIN_SATS_TO_BE_PAID
-	}
-	amountInBTC, err := strconv.ParseFloat(string(amountBits), 32)
-	if err != nil {
-		return MIN_SATS_TO_BE_PAID
-	}
-	amountInSats := SATS_PER_BTC * amountInBTC
-	return int64(amountInSats)
-}
 
 func main() {
 	router := gin.Default()
-	lnClientConfig := &ln.LNClientConfig{
-		LNClientType: "LNURL",
-		LNURLConfig: ln.LNURLoptions{
-			Address: os.Getenv("LNURL_ADDRESS"),
-		},
-	}
-	fr := &FiatRateConfig{
-		Currency: "USD",
-		Amount:   0.50,
-	}
-	lsatmiddleware, err := ginlsat.NewLsatMiddleware(lnClientConfig, fr.FiatToBTCAmountFunc)
+
+	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")))
 	if err != nil {
 		log.Fatal(err)
 	}
-	assetDirName := os.Getenv("ASSET_DIR_NAME")
+	logrus.Info("Opened database")
+	err = db.AutoMigrate(&UploadedFileMetadata{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	svc := &Service{
+		DB: db,
+		Config: &Config{
+			AssetDirName: os.Getenv("ASSET_DIR_NAME"),
+		},
+	}
+	//we are not using a predefined mw, but a custom one (svc is the ln client)
+	lsatmiddleware := &ginlsat.GinLsatMiddleware{}
+	lsatmiddleware.LNClient = svc
+	lsatmiddleware.AmountFunc = func(req *http.Request) (amount int64) {
+		//dummy, this will get overwritten by the LNClient anyway
+		return 1
+	}
 
 	paid := router.Group("/assets", lsatmiddleware.Handler, checkLsatPaidHandler)
-	paid.Static("/", assetDirName)
-	router.POST("/upload", func(c *gin.Context) {
-		// single file
-		file, _ := c.FormFile("file")
-		log.Println(file.Filename)
-
-		// Upload the file to specific dst.
-		err = c.SaveUploadedFile(file, fmt.Sprintf("%s/%s", assetDirName, file.Filename))
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-		}
-
-		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
-	})
+	paid.Static("/", svc.Config.AssetDirName)
+	router.POST("/upload", svc.Uploadfile)
+	router.GET("/index", svc.Listfiles)
 
 	log.Fatal(router.Run(":8080"))
 }
 
 func checkLsatPaidHandler(c *gin.Context) {
 	lsatInfo := c.Value("LSAT").(*ginlsat.LsatInfo)
+	fmt.Println(lsatInfo)
 	if lsatInfo.Type != ginlsat.LSAT_TYPE_PAID {
 		c.AbortWithStatusJSON(http.StatusPaymentRequired, gin.H{
 			"code":    http.StatusPaymentRequired,
