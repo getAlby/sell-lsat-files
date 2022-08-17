@@ -30,6 +30,7 @@ func main() {
 		DB: db,
 		Config: &Config{
 			AssetDirName: os.Getenv("ASSET_DIR_NAME"),
+			StaticDir:    os.Getenv("STATIC_DIR_NAME"),
 		},
 	}
 	//we are not using a predefined mw, but a custom one (svc is the ln client)

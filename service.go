@@ -25,6 +25,7 @@ const (
 
 type Config struct {
 	AssetDirName string
+	StaticDir    string
 }
 type Service struct {
 	DB     *gorm.DB
