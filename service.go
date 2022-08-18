@@ -31,8 +31,10 @@ const (
 )
 
 type Config struct {
-	AssetDirName string
-	StaticDir    string
+	DatabaseUrl  string `envconfig:"DATABASE_URL" required:"true"`
+	AssetDirName string `envconfig:"ASSET_DIR_NAME" default:"assets"`
+	StaticDir    string `envconfig:"STATIC_DIR_NAME" default:"static"`
+	Scheme       string `envconfig:"SCHEME" default:"https"`
 }
 type Service struct {
 	DB     *gorm.DB
@@ -54,7 +56,7 @@ func (svc *Service) Home(c *gin.Context) {
 		response = append(response, IndexResponseEntry{
 			CreatedAt:     e.CreatedAt,
 			TimeAgo:       timeago.English.Format(e.CreatedAt),
-			URL:           fmt.Sprintf("https://%s/assets/%s", c.Request.Host, e.Name),
+			URL:           fmt.Sprintf("%s://%s/assets/%s", svc.Config.Scheme, c.Request.Host, e.Name),
 			Name:          e.OriginalName,
 			LNAddress:     e.LNAddress,
 			Price:         e.Price,

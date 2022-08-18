@@ -9,6 +9,8 @@ import (
 	"github.com/getAlby/gin-lsat/ginlsat"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -16,8 +18,18 @@ import (
 
 func main() {
 	router := gin.Default()
+	c := &Config{}
+	// Load configruation from environment variables
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("Failed to load .env file")
+	}
+	err = envconfig.Process("", c)
+	if err != nil {
+		log.Fatalf("Error loading environment variables: %v", err)
+	}
 
-	db, err := gorm.Open(postgres.Open(os.Getenv("DATABASE_URL")))
+	db, err := gorm.Open(postgres.Open(c.DatabaseUrl))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,11 +39,8 @@ func main() {
 		log.Fatal(err)
 	}
 	svc := &Service{
-		DB: db,
-		Config: &Config{
-			AssetDirName: os.Getenv("ASSET_DIR_NAME"),
-			StaticDir:    os.Getenv("STATIC_DIR_NAME"),
-		},
+		DB:     db,
+		Config: c,
 	}
 	//create free and paid dirs
 	err = os.MkdirAll(fmt.Sprintf("%s/free", svc.Config.AssetDirName), os.ModePerm)

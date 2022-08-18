@@ -3,20 +3,21 @@ module lsatfiles
 go 1.17
 
 require (
+	github.com/esimov/stackblur-go v1.1.0
 	github.com/getAlby/gin-lsat v0.0.0-20220817065059-d34465606a52
 	github.com/gin-gonic/gin v1.8.1
 	github.com/gofrs/uuid v4.2.0+incompatible
+	github.com/joho/godotenv v1.4.0
+	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/xeonx/timeago v1.0.0-rc5
 )
 
 require (
-	github.com/esimov/stackblur-go v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
-	github.com/xeonx/timeago v1.0.0-rc5 // indirect
 )
 
 require (
-	github.com/BurntSushi/graphics-go v0.0.0-20160129215708-b43f31a4a966
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/aead/siphash v1.0.1 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect
