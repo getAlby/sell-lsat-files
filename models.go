@@ -19,6 +19,7 @@ type UploadedFileMetadata struct {
 
 type IndexResponseEntry struct {
 	CreatedAt     time.Time
+	TimeAgo       string
 	URL           string
 	Name          string
 	LNAddress     string

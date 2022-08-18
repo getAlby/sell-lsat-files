@@ -21,6 +21,7 @@ import (
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/zpay32"
 	"github.com/mcnijman/go-emailaddress"
+	"github.com/xeonx/timeago"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
@@ -39,16 +40,20 @@ type Service struct {
 }
 
 func (svc *Service) Home(c *gin.Context) {
-	entries := &[]UploadedFileMetadata{}
-	err := svc.DB.Find(entries, &UploadedFileMetadata{}).Error
+	entries := []UploadedFileMetadata{}
+	err := svc.DB.Find(&entries, &UploadedFileMetadata{}).Error
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Something went wrong")
 		return
 	}
 	response := []IndexResponseEntry{}
-	for _, e := range *entries {
+
+	for i, _ := range entries {
+		//switch order, newest first
+		e := entries[len(entries)-i-1]
 		response = append(response, IndexResponseEntry{
 			CreatedAt:     e.CreatedAt,
+			TimeAgo:       timeago.English.Format(e.CreatedAt),
 			URL:           fmt.Sprintf("https://%s/assets/%s", c.Request.Host, e.Name),
 			Name:          e.OriginalName,
 			LNAddress:     e.LNAddress,
