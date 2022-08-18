@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
+	_ "image/png"
 	"net/http"
 	"net/url"
 	"os"
@@ -122,6 +123,7 @@ func (svc *Service) Uploadfile(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, map[string]string{
+		"msg": "File succesfully uploaded. You can close this page.",
 		"url": fmt.Sprintf("https://%s/assets/%s", c.Request.Host, totalName),
 	})
 }

@@ -10,50 +10,6 @@
     <main>
         <div class="container">
             <div class="col-9">
-                <div class="statuses">
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220604085434/GeeksForGeeks-300x243.png"
-                                 alt="img3">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                 alt="img4">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093241/g3-200x200.png" 
-                                 alt="img5">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" 
-                                 alt="img6">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                 alt="img7">
-                        </div>
-                    </div>
-                    <div class="status">
-                        <div class="image">
-                            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220604085434/GeeksForGeeks-300x243.png" 
-                                 alt="img8">
-                        </div>
-                    </div>
-                </div>
                 
               <!-- Code for viewing the Post -->
 				{{ range .Entries }}
@@ -211,112 +167,18 @@
             </div>
             <div class="col-3">
                 <div class="card">
-                    <h4>Suggestions For You</h4>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                            alt="img12">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Aditya Verma<br>
-                              <span>Follows You</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow
-                             </a>
-                        </div>
-                    </div>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" 
-                                            alt="img13">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Amit Singh<br>
-                              <span>Follows You</span>
-                           </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow
-                           </a>
-                        </div>
-                    </div>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093221/g2-200x200.jpg" 
-                                            alt="img14">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Piyush Agarwal<br>
-                                <span>Followed by Keshav Agarwal</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow</a>
-                        </div>
-                    </div>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" 
-                                            alt="img15">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Amit Sharma<br>
-                              <span>Follows You</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow
-                           </a>
-                        </div>
-                    </div>
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093241/g3-200x200.png" 
-                                            alt="img16" 
-                                            class="cover">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>Raj Goel<br>
-                                <span>Followed by Keshav Agarwal</span>
-                            </h3>
-                        </div>
-                        <div>
-                            <a href="#" 
-                               class="follow">follow
-                            </a>
-                        </div>
-                    </div>
+                    <h4>Upload your images</h4>
+					<form id="uploadbanner" enctype="multipart/form-data" method="post" action="/upload" target="/" class="col-3">
+						<input id="fileupload" name="file" type="file" />
+						<br>
+						<label for="lnaddress">Lightning Address</label>
+						<input id="lnaddress" name="ln_address" type="text" />
+						<br>
+						<label for="price">Price in sats</label>
+						<input id="price" name="price" type="number" />
+						<br>
+						<input type="submit" value="submit" id="submit" />
+					 </form>
                 </div>
                 
              <!-- Our Footer Section will start from Here -->
