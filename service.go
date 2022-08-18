@@ -48,7 +48,7 @@ func (svc *Service) Home(c *gin.Context) {
 	response := []IndexResponseEntry{}
 	for _, e := range *entries {
 		response = append(response, IndexResponseEntry{
-			URL:       fmt.Sprintf("http://%s/assets/%s", c.Request.Host, e.Name),
+			URL:       fmt.Sprintf("https://%s/assets/%s", c.Request.Host, e.Name),
 			Name:      e.OriginalName,
 			LNAddress: e.LNAddress,
 			Price:     e.Price,
