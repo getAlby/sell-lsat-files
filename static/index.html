@@ -7,7 +7,7 @@
 <br>
 </li>
 <br>
-<img id="img" width="500" height="600">
+<img id="{{ .URL }}" width="500" height="600">
 {{ end }}
 <script
   src="https://unpkg.com/webln@0.2.0/dist/webln.min.js"
@@ -15,7 +15,13 @@
   crossorigin="anonymous"
 ></script>
 <script>
-	async function fetchLSAT(url) {
+async function fetchLSAT(url) {
+	fetched = localStorage.getItem(url);
+	if (fetched != null) {
+		fetched = JSON.parse(fetched)
+		await fetchImg(url, fetched.mac, fetched.preimage)
+		return
+	}
 	resp = await fetch(url, {headers: {"Accept": "application/vnd.lsat.v1.full"}})
     const header = resp.headers.get('www-authenticate')
 	// show some information about the lsat
@@ -25,10 +31,15 @@
 	webln = await WebLN.requestProvider();
 	await webln.enable()
 	invResp = await webln.sendPayment(inv)
-	resp = await fetch(url, {headers: {"Authorization": `LSAT ${mac}:${invResp.preimage}`}})
+	localStorage.setItem(url, JSON.stringify({'mac': mac, 'preimage': invResp.preimage}));
+	await fetchImg(url, mac, invResp.preimage)
+
+}
+async function fetchImg(url, mac, preimage) {
+	resp = await fetch(url, {headers: {"Authorization": `LSAT ${mac}:${preimage}`}})
 	const blob = await resp.blob();
   	const objectUrl = URL.createObjectURL(blob);
-  	const imageElement = document.getElementById('img');
+  	const imageElement = document.getElementById(url);
   	imageElement.src = objectUrl;
 }
 </script>
