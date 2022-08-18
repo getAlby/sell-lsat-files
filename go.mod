@@ -9,11 +9,13 @@ require (
 )
 
 require (
+	github.com/esimov/stackblur-go v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
 )
 
 require (
+	github.com/BurntSushi/graphics-go v0.0.0-20160129215708-b43f31a4a966
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/aead/siphash v1.0.1 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect

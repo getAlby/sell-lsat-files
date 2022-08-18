@@ -33,6 +33,16 @@ func main() {
 			StaticDir:    os.Getenv("STATIC_DIR_NAME"),
 		},
 	}
+	//create free and paid dirs
+	err = os.MkdirAll(fmt.Sprintf("%s/free", svc.Config.AssetDirName), os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = os.MkdirAll(fmt.Sprintf("%s/paid", svc.Config.AssetDirName), os.ModePerm)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//we are not using a predefined mw, but a custom one (svc is the ln client)
 	lsatmiddleware := &ginlsat.GinLsatMiddleware{}
 	lsatmiddleware.LNClient = svc
@@ -41,27 +51,16 @@ func main() {
 		return 1
 	}
 
-	paid := router.Group("/assets", lsatmiddleware.Handler, checkLsatPaidHandler, cors.New(cors.Config{
+	paid := router.Group("/assets", lsatmiddleware.Handler, cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods:    []string{"GET"},
 		AllowHeaders:    []string{"Accept", "Authorization"},
 	}))
-	paid.Static("/", svc.Config.AssetDirName)
+	paid.GET("/:file", svc.AssetHandler)
 	router.POST("/upload", svc.Uploadfile)
 	router.LoadHTMLGlob("static/*.html")
 	router.GET("/", svc.Home)
 	router.Static("/static", "static/css")
 
 	log.Fatal(router.Run(":8080"))
-}
-
-func checkLsatPaidHandler(c *gin.Context) {
-	lsatInfo := c.Value("LSAT").(*ginlsat.LsatInfo)
-	fmt.Println(lsatInfo)
-	if lsatInfo.Type != ginlsat.LSAT_TYPE_PAID {
-		c.AbortWithStatusJSON(http.StatusPaymentRequired, gin.H{
-			"code":    http.StatusPaymentRequired,
-			"message": "There is no free content, pay up",
-		})
-	}
 }
