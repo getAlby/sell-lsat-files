@@ -48,20 +48,38 @@ func (svc *Service) Home(c *gin.Context) {
 	response := []IndexResponseEntry{}
 	for _, e := range *entries {
 		response = append(response, IndexResponseEntry{
-			URL:       fmt.Sprintf("https://%s/assets/%s", c.Request.Host, e.Name),
-			Name:      e.OriginalName,
-			LNAddress: e.LNAddress,
-			Price:     e.Price,
-			Currency:  e.Currency,
+			CreatedAt:     e.CreatedAt,
+			URL:           fmt.Sprintf("https://%s/assets/%s", c.Request.Host, e.Name),
+			Name:          e.OriginalName,
+			LNAddress:     e.LNAddress,
+			Price:         e.Price,
+			NrOfDownloads: e.NrOfDownloads,
+			SatsEarned:    e.SatsEarned,
+			Currency:      e.Currency,
 		})
 	}
 	c.HTML(http.StatusOK, "index.html", gin.H{"Entries": response})
+}
+
+func (svc *Service) UpdateFileMetadata(filename string) error {
+	fetched := &UploadedFileMetadata{}
+	err := svc.DB.First(fetched, &UploadedFileMetadata{
+		Name: filename,
+	}).Error
+	if err != nil {
+		return err
+	}
+	fetched.NrOfDownloads += 1
+	//not fiat-proof, todo: fix
+	fetched.SatsEarned += fetched.Price
+	return svc.DB.Save(fetched).Error
 }
 
 func (svc *Service) AssetHandler(c *gin.Context) {
 	lsatInfo := c.Value("LSAT").(*ginlsat.LsatInfo)
 	if lsatInfo.Type == ginlsat.LSAT_TYPE_PAID {
 		c.File(fmt.Sprintf("%s/paid/%s", svc.Config.AssetDirName, c.Param("file")))
+		go svc.UpdateFileMetadata(c.Param("file"))
 		return
 	}
 	c.File(fmt.Sprintf("%s/free/%s", svc.Config.AssetDirName, c.Param("file")))
