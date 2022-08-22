@@ -59,15 +59,14 @@ func (svc *Service) Index(c *gin.Context) {
 }
 func (svc *Service) getMetadata(c *gin.Context) (response []IndexResponseEntry, err error) {
 	entries := []UploadedFileMetadata{}
-	err = svc.DB.Find(&entries, &UploadedFileMetadata{}).Error
+	err = svc.DB.Order("created_at desc").Find(&entries, &UploadedFileMetadata{}).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 	response = []IndexResponseEntry{}
 
-	for i := range entries {
+	for _, e := range entries {
 		//switch order, newest first
-		e := entries[len(entries)-i-1]
 		response = append(response, IndexResponseEntry{
 			CreatedAt:     e.CreatedAt,
 			TimeAgo:       timeago.English.Format(e.CreatedAt),
