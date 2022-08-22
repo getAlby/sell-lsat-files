@@ -21,6 +21,7 @@ import (
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/zpay32"
 	"github.com/mcnijman/go-emailaddress"
+	"github.com/sirupsen/logrus"
 	"github.com/xeonx/timeago"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
@@ -42,15 +43,29 @@ type Service struct {
 }
 
 func (svc *Service) Home(c *gin.Context) {
-	entries := []UploadedFileMetadata{}
-	err := svc.DB.Find(&entries, &UploadedFileMetadata{}).Error
+	response, err := svc.getMetadata(c)
+	if err != nil {
+		logrus.Error(err)
+		c.String(http.StatusInternalServerError, "Something went wrong")
+	}
+	c.HTML(http.StatusOK, "index.html", gin.H{"Entries": response})
+}
+func (svc *Service) Index(c *gin.Context) {
+	resp, err := svc.getMetadata(c)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Something went wrong")
-		return
 	}
-	response := []IndexResponseEntry{}
+	c.JSON(http.StatusOK, resp)
+}
+func (svc *Service) getMetadata(c *gin.Context) (response []IndexResponseEntry, err error) {
+	entries := []UploadedFileMetadata{}
+	err = svc.DB.Find(&entries, &UploadedFileMetadata{}).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	response = []IndexResponseEntry{}
 
-	for i, _ := range entries {
+	for i := range entries {
 		//switch order, newest first
 		e := entries[len(entries)-i-1]
 		response = append(response, IndexResponseEntry{
@@ -65,9 +80,8 @@ func (svc *Service) Home(c *gin.Context) {
 			Currency:      e.Currency,
 		})
 	}
-	c.HTML(http.StatusOK, "index.html", gin.H{"Entries": response})
+	return response, nil
 }
-
 func (svc *Service) UpdateFileMetadata(filename string) error {
 	fetched := &UploadedFileMetadata{}
 	err := svc.DB.First(fetched, &UploadedFileMetadata{
