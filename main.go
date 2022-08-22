@@ -69,6 +69,7 @@ func main() {
 	router.POST("/upload", svc.Uploadfile)
 	router.LoadHTMLGlob("static/*.html")
 	router.GET("/", svc.Home)
+	router.GET("/index", svc.Index)
 	router.Static("/static", "static/css")
 
 	log.Fatal(router.Run(":8080"))
