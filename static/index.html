@@ -1,127 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="stylesheet"
-          href="static/style.css">
-    <title>LSAT Instagram</title>
-</head>
-<body>
-    <!-- Code for Showing the Status -->
-    <main>
-        <div class="container">
-            <div class="col-9">
-                
-              <!-- Code for viewing the Post -->
-				{{ range .Entries }}
-                <div class="card">
-                    <div class="top">
-                        <div class="userDetails">
-                            <div class="profilepic">
-                                <div class="profile_img">
-                                    <div class="image">
-                                        <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" 
-                                            alt="img8">
-                                    </div>
-                                </div>
-                            </div>
-                            <h3>{{ .Name }} - {{ .Price }} sats
-                                  <br>
-                                  <span>{{ .LNAddress}}</span>
-                          </h3>
-                        </div>
-                        <div>
-                            <span class="dot">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="imgBx">
-                        <img src="{{ .URL }}" id="{{ .URL }}"
-							onclick="fetchLSAT({{ .URL }})"
-                            class="cover">
-                    </div>
-                    <div class="bottom">
-                        <a href="#">
-                            <p class="likes">{{ .NrOfDownloads}} downloads</p>
-                            <p class="likes">{{ .SatsEarned}} sats earned</p>
-                        </a>
-                        <a href="#">
-                            <p class="message">
-                              <b>{{ .TimeAgo}}</b>
-                            </p>
-                        </a>
-                    </div>
-                </div>
-				{{ end }}
-            </div>
-            <div class="col-3">
-                <div class="card">
-                    <h4>Upload your images</h4>
-					<form id="uploadbanner" enctype="multipart/form-data" method="post" action="/upload" target="/" class="col-3">
-						<input id="fileupload" name="file" type="file" />
-						<br>
-						<label for="lnaddress">Lightning Address</label>
-						<input id="lnaddress" name="ln_address" type="text" />
-						<br>
-						<label for="price">Price in sats</label>
-						<input id="price" name="price" type="number" />
-						<br>
-						<input type="submit" value="submit" id="submit" />
-					 </form>
-                </div>
-                
-             <!-- Our Footer Section will start from Here -->
-                <div class="footer">
-                    <a class="footer-section" href="#">About</a>
-                    <a class="footer-section" href="#">Help</a>
-                    <a class="footer-section" href="#">Privacy</a>
-                    <a class="footer-section" href="#">Terms</a>
-                    <br>
-                    <a class="footer-section" href="#">Top Accounts</a>
-                    <a class="footer-section" href="#">Hashtag</a>
-                    <a class="footer-section" href="#">Language</a>
-                    <br><br>
-                    <span class="footer-section">
-                        © 2023 GETALBY.COM
-                    </span>
-                </div>
-            </div>
-        </div>
-    </main>
-</body>
-<script
-  src="https://unpkg.com/webln@0.2.0/dist/webln.min.js"
-  integrity="sha384-mTReBqbhPO7ljQeIoFaD1NYS2KiYMwFJhUNpdwLj+VIuhhjvHQlZ1XpwzAvd93nQ"
-  crossorigin="anonymous"
-></script>
-<script>
-async function fetchLSAT(url) {
-	fetched = localStorage.getItem(url);
-	if (fetched != null) {
-		fetched = JSON.parse(fetched)
-		await fetchImg(url, fetched.mac, fetched.preimage)
-		return
-	}
-	resp = await fetch(url, {headers: {"Accept": "application/vnd.lsat.v1.full"}})
-    const header = resp.headers.get('www-authenticate')
-	// show some information about the lsat
-	parts = header.split(",")
-	mac = parts[0].replace("LSAT macaroon=", "").trimStart()
-	inv = parts[1].replace("invoice=", "").trimStart()
-	webln = await WebLN.requestProvider();
-	await webln.enable()
-	invResp = await webln.sendPayment(inv)
-	localStorage.setItem(url, JSON.stringify({'mac': mac, 'preimage': invResp.preimage}));
-	await fetchImg(url, mac, invResp.preimage)
 
-}
-async function fetchImg(url, mac, preimage) {
-	resp = await fetch(url, {headers: {"Authorization": `LSAT ${mac}:${preimage}`}})
-	const blob = await resp.blob();
-  	const objectUrl = URL.createObjectURL(blob);
-  	const imageElement = document.getElementById(url);
-  	imageElement.src = objectUrl;
-}
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="/static/style.css" />
+  <title>LSAT Insatgram</title>
+</head>
+
+<body>
+  <!-- Code for Showing the Status -->
+  <main>
+    <div class="container">
+      <div class="col-9">
+
+        <div id="image-list"></div>
+
+      </div>
+      <div class="col-3">
+        <div class="card">
+          <h4>Upload your images</h4>
+          <form id="uploadbanner" enctype="multipart/form-data" method="post" action="/upload" target="/" class="col-3">
+            <input id="fileupload" name="file" type="file" />
+            <br>
+            <label for="lnaddress">Lightning Address</label>
+            <input id="lnaddress" name="ln_address" type="text" />
+            <br>
+            <label for="price">Price in sats</label>
+            <input id="price" name="price" type="number" />
+            <br>
+            <input type="submit" value="submit" id="submit" />
+          </form>
+        </div>
+
+        <!-- Our Footer Section will start from Here -->
+        <div class="footer">
+          <a class="footer-section" href="#">About</a>
+          <a class="footer-section" href="#">Help</a>
+          <a class="footer-section" href="#">Privacy</a>
+          <a class="footer-section" href="#">Terms</a>
+          <br>
+          <a class="footer-section" href="#">Top Accounts</a>
+          <a class="footer-section" href="#">Hashtag</a>
+          <a class="footer-section" href="#">Language</a>
+          <br><br>
+          <span class="footer-section">
+            © 2023 GETALBY.COM
+          </span>
+        </div>
+      </div>
+    </div>
+  </main>
+<script>
+  async function fetchLSAT(url) {
+    fetched = localStorage.getItem(url);
+    if (fetched != null) {
+      fetched = JSON.parse(fetched)
+      await fetchImg(url, fetched.mac, fetched.preimage)
+      return
+    }
+    resp = await fetch(url, {
+      headers: {
+        "Accept": "application/vnd.lsat.v1.full"
+      }
+    })
+    const header = resp.headers.get('www-authenticate')
+    // show some information about the lsat
+    parts = header.split(",")
+    mac = parts[0].replace("LSAT macaroon=", "").trimStart()
+    inv = parts[1].replace("invoice=", "").trimStart()
+    if (!window.webln) {
+      alert("Please install Alby to pay and load the images");
+      return;
+    }
+    webln = await WebLN.requestProvider();
+    await webln.enable()
+    invResp = await webln.sendPayment(inv)
+    localStorage.setItem(url, JSON.stringify({
+      'mac': mac,
+      'preimage': invResp.preimage
+    }));
+    await fetchImg(url, mac, invResp.preimage)
+
+  }
+  async function fetchImg(url, mac, preimage) {
+    resp = await fetch(url, {
+      headers: {
+        "Authorization": `LSAT ${mac}:${preimage}`
+      }
+    })
+    const blob = await resp.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const imageElement = document.getElementById(url);
+    imageElement.src = objectUrl;
+  }
 </script>
+
+<script type="module">
+  import htm from 'https://unpkg.com/htm?module'
+  const html = htm.bind(React.createElement);
+
+  function Image(props) {
+
+    const img = React.useRef();
+
+    React.useEffect(() => {
+      async function loadImage() {
+        const fetchedJSON = localStorage.getItem(props.image.URL);
+        if (fetchedJSON !== null) {
+          const fetched = JSON.parse(fetchedJSON);
+          const objectUrl = await fetchImg(props.image.URL, fetched.mac, fetched.preimage);
+          img.current.src = objectUrl;
+        } else {
+          img.current.src = `${props.image.URL}?${Date.now()}`;
+        }
+      }
+      loadImage();
+    }, [img]);
+
+    const fetchLSAT = async (event) => {
+      event.preventDefault();
+      const url = props.image.URL;
+      const fetchedJSON = localStorage.getItem(url);
+      if (fetchedJSON !== null) {
+        const fetched = JSON.parse(fetchedJSON);
+        const objectUrl = await fetchImg(url, fetched.mac, fetched.preimage);
+        img.current.src = objectUrl;
+        return;
+      }
+
+      const resp = await fetch(url, {
+        headers: {
+          "Accept": "application/vnd.lsat.v1.full"
+        }
+      });
+      const header = resp.headers.get('www-authenticate');
+      // show some information about the lsat
+      const parts = header.split(",")
+      const mac = parts[0].replace("LSAT macaroon=", "").trimStart();
+      const inv = parts[1].replace("invoice=", "").trimStart();
+      if (!window.webln) {
+        alert("Please install Alby to pay and load the images");
+        return;
+      }
+      await window.webln.enable();
+      const invResp = await window.webln.sendPayment(inv)
+      localStorage.setItem(url, JSON.stringify({
+        'mac': mac,
+        'preimage': invResp.preimage
+      }));
+      const objectUrl = await fetchImg(url, mac, invResp.preimage);
+      img.current.src = objectUrl;
+    }
+
+    const fetchImg = async (url, mac, preimage) => {
+      const resp = await fetch(url, {
+        headers: {
+          "Authorization": `LSAT ${mac}:${preimage}`
+        }
+      });
+      const blob = await resp.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      return objectUrl;
+    }
+
+    return html`
+      <img data-src=${`${props.image.URL}?${Date.now()}`} ref=${img} alt=${props.image.Name} onClick=${fetchLSAT} class="cover" />
+    `;
+  }
+
+  function ImageList() {
+    const [images, setImages] = React.useState([]);
+
+    const load = async (lastId) => {
+       try {
+          const response = await axios.get('/index');
+          setImages(response.data);
+       } catch(e) {
+          alert("Something went wrong. Please try again later");
+          console.error(e);
+       }
+    }
+
+    React.useEffect(() => {
+      load();
+    }, []);
+
+    return html`
+      <div>
+        ${images.map(image => html`
+          <div class="card" key=${image.Id}>
+            <div class="top">
+              <div class="userDetails">
+                <div class="profilepic">
+                  <div class="profile_img">
+                    <div class="image">
+                      <img src="https://media.geeksforgeeks.org/wp-content/uploads/20220609093229/g-200x200.png" alt="img8" />
+                    </div>
+                  </div>
+                </div>
+                <h3>${image.Name} - ${image.Price} sats
+                  <br />
+                  <span>${image.LNAddress}</span>
+                </h3>
+              </div>
+              <div>
+                <span class="dot">
+                  <i class="fas fa-ellipsis-h"></i>
+                </span>
+              </div>
+            </div>
+            <div class="imgBx">
+              <${Image} image=${image} />
+            </div>
+            <div class="bottom">
+              <a href="#">
+                <p class="likes">${image.NrOfDownloads} downloads</p>
+                <p class="likes">${image.SatsEarned} sats earned</p>
+              </a>
+              <a href="#">
+                <p class="message">
+                  <b>${image.TimeAgo}</b>
+                </p>
+              </a>
+            </div>
+          </div>
+        `)}
+      </div>
+    `;
+  }
+
+  const container = document.getElementById('image-list');
+  const root = ReactDOM.createRoot(container);
+  root.render(html`<${ImageList} />`);
+</script>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/react-dropzone-uploader"></script>
+<script src="https://unpkg.com/js-confetti/dist/js-confetti.browser.js"></script>
+
+</body>
+
 </html>

@@ -8,23 +8,25 @@ import (
 
 type UploadedFileMetadata struct {
 	gorm.Model
-	LNAddress     string
-	Name          string
-	OriginalName  string
-	Price         int
+	Id						int
+	LNAddress 		string
+	Name					string
+	OriginalName	string
+	Price 				int
 	NrOfDownloads int
-	SatsEarned    int
-	Currency      string
+	SatsEarned		int
+	Currency			string
 }
 
 type IndexResponseEntry struct {
-	CreatedAt     time.Time
-	TimeAgo       string
-	URL           string
-	Name          string
-	LNAddress     string
-	Price         int
+	Id						int
+	CreatedAt 		time.Time
+	TimeAgo 			string
+	URL 					string
+	Name					string
+	LNAddress 		string
+	Price 				int
 	NrOfDownloads int
-	SatsEarned    int
-	Currency      string
+	SatsEarned		int
+	Currency			string
 }
