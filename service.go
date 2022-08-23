@@ -42,14 +42,6 @@ type Service struct {
 	Config *Config
 }
 
-func (svc *Service) Home(c *gin.Context) {
-	response, err := svc.getMetadata(c)
-	if err != nil {
-		logrus.Error(err)
-		c.String(http.StatusInternalServerError, "Something went wrong")
-	}
-	c.HTML(http.StatusOK, "index.html", gin.H{"Entries": response})
-}
 func (svc *Service) Index(c *gin.Context) {
 	resp, err := svc.getMetadata(c)
 	if err != nil {
@@ -68,6 +60,7 @@ func (svc *Service) getMetadata(c *gin.Context) (response []IndexResponseEntry, 
 	for _, e := range entries {
 		//switch order, newest first
 		response = append(response, IndexResponseEntry{
+			Id:            e.ID,
 			CreatedAt:     e.CreatedAt,
 			TimeAgo:       timeago.English.Format(e.CreatedAt),
 			URL:           fmt.Sprintf("%s://%s/assets/%s", svc.Config.Scheme, c.Request.Host, e.Name),
@@ -97,6 +90,9 @@ func (svc *Service) UpdateFileMetadata(filename string) error {
 
 func (svc *Service) AssetHandler(c *gin.Context) {
 	lsatInfo := c.Value("LSAT").(*ginlsat.LsatInfo)
+	if lsatInfo.Type == ginlsat.LSAT_TYPE_ERROR {
+		logrus.Errorf("lsat error: %s for path %s", lsatInfo.Error, c.Request.URL.Path)
+	}
 	if lsatInfo.Type == ginlsat.LSAT_TYPE_PAID {
 		c.File(fmt.Sprintf("%s/paid/%s", svc.Config.AssetDirName, c.Param("file")))
 		go svc.UpdateFileMetadata(c.Param("file"))
@@ -129,6 +125,11 @@ func (svc *Service) Uploadfile(c *gin.Context) {
 	}
 	if lnaddress == "" || price <= 0 || file == nil {
 		c.String(http.StatusBadRequest, "ln address, price and file must be set")
+		return
+	}
+	_, err = FindLNAddress(lnaddress)
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("Invalid LN Address: %s", lnaddress))
 		return
 	}
 	uuid, err := uuid.NewV4()
@@ -213,7 +214,7 @@ func FindLNAddress(input string) (response *LNURLPayResponse, err error) {
 		}
 	}
 
-	return nil, fmt.Errorf("nothing found %s", input)
+	return nil, fmt.Errorf("Not a LN Address %s", input)
 }
 
 func constructLNURL(user, host string) (result string) {

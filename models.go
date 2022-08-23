@@ -18,6 +18,7 @@ type UploadedFileMetadata struct {
 }
 
 type IndexResponseEntry struct {
+	Id            uint
 	CreatedAt     time.Time
 	TimeAgo       string
 	URL           string
