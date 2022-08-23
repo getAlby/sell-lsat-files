@@ -59,7 +59,7 @@ func (svc *Service) getMetadata(c *gin.Context) (response []IndexResponseEntry, 
 	for _, e := range entries {
 		//switch order, newest first
 		response = append(response, IndexResponseEntry{
-			Id: 					 e.Id,
+			Id:            e.ID,
 			CreatedAt:     e.CreatedAt,
 			TimeAgo:       timeago.English.Format(e.CreatedAt),
 			URL:           fmt.Sprintf("%s://%s/assets/%s", svc.Config.Scheme, c.Request.Host, e.Name),
