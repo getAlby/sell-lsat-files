@@ -65,12 +65,14 @@ func main() {
 		AllowMethods:    []string{"GET"},
 		AllowHeaders:    []string{"Accept", "Authorization"},
 	}))
+
+	router.Use(cors.Default())
+
 	paid.GET("/:file", svc.AssetHandler)
 	router.POST("/upload", svc.Uploadfile)
-	router.LoadHTMLGlob("static/*.html")
-	router.GET("/", svc.Home)
 	router.GET("/index", svc.Index)
-	router.Static("/static", "static/css")
+	router.StaticFile("/", "frontend/build/index.html")
+	router.StaticFS("/static/", gin.Dir("frontend/build/static", false))
 
 	log.Fatal(router.Run(":8080"))
 }

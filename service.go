@@ -21,7 +21,6 @@ import (
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/zpay32"
 	"github.com/mcnijman/go-emailaddress"
-	"github.com/sirupsen/logrus"
 	"github.com/xeonx/timeago"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
@@ -42,14 +41,6 @@ type Service struct {
 	Config *Config
 }
 
-func (svc *Service) Home(c *gin.Context) {
-	response, err := svc.getMetadata(c)
-	if err != nil {
-		logrus.Error(err)
-		c.String(http.StatusInternalServerError, "Something went wrong")
-	}
-	c.HTML(http.StatusOK, "index.html", gin.H{"Entries": response})
-}
 func (svc *Service) Index(c *gin.Context) {
 	resp, err := svc.getMetadata(c)
 	if err != nil {
