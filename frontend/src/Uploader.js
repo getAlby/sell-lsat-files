@@ -64,9 +64,7 @@ function Uploader(props) {
 
   return (
     <form onSubmit={onSubmit}>
-      <div className="form-group">
-        <h3>Upload your image, earn sats!</h3>
-      </div>
+
       <div className="form-group image-select">
         {!file && (
           <div {...getRootProps({className: 'dropzone'})}>
