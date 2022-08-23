@@ -55,15 +55,20 @@ function Image(props) {
       }
       return;
     }
-    await window.webln.enable();
-    const invResp = await window.webln.sendPayment(inv)
-    localStorage.setItem(url, JSON.stringify({
-      'mac': mac,
-      'preimage': invResp.preimage
-    }));
-    const objectUrl = await fetchImg(url, mac, invResp.preimage);
-    img.current.src = objectUrl;
-    setLoading(false);
+    try {
+      await window.webln.enable();
+      const invResp = await window.webln.sendPayment(inv)
+      localStorage.setItem(url, JSON.stringify({
+        'mac': mac,
+        'preimage': invResp.preimage
+      }));
+      const objectUrl = await fetchImg(url, mac, invResp.preimage);
+      img.current.src = objectUrl;
+    } catch(e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const revokeObjectURL = (e) => {
