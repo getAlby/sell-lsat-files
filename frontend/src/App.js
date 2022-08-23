@@ -38,7 +38,11 @@ function App() {
 
           </div>
           <div className="footer">
-            <a className="footer-section" href="#">About</a>
+            <small>
+            Buy and sell images for sats, sent directly to your own wallet.
+            Set a budget feature in Alby for an optimal browsing experience.
+            Made using <a href='https://github.com/lightninglabs/LSAT/'>LSAT</a> and the <a href='https://dhananjaypurohit.medium.com/building-a-middleware-library-implementing-the-lsats-spec-summer-of-bitcoin22-at-alby-a64455a62568'>Gin LSAT middleware</a>.
+            </small>
           </div>
         </div>
       </div>
