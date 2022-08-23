@@ -51,7 +51,7 @@ function App() {
           <div className="footer">
 
             <div className="powered-by">
-              <h3>Powered by</h3>
+              <h3>This showcase is powered by</h3>
               <p>Upgrade your Browser for the Bitcoin Lightning age</p>
               <a href="https://getalby.com">
                 <svg viewBox="0 0 1094 525" fill="none" xmlns="http://www.w3.org/2000/svg">
