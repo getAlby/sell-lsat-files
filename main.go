@@ -72,6 +72,7 @@ func main() {
 	router.POST("/upload", svc.Uploadfile)
 	router.GET("/index", svc.Index)
 	router.StaticFile("/", "frontend/build/index.html")
+	router.StaticFile("/logo.png", "frontend/build/logo.png")
 	router.StaticFS("/static/", gin.Dir("frontend/build/static", false))
 
 	log.Fatal(router.Run(":8080"))

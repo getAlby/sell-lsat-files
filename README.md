@@ -26,3 +26,5 @@ The frontend is a React.js APP living in the `frontend` folder.
 
 To run a frontend build run `yarn build` in the `frontend` folder.
 For ease of deployment the JS build files are in the repo.
+
+To run the frontend app with auto-fresh run `yarn start` in the `frontend` folder. This will serve the app on a different port (currently the API does not work then)

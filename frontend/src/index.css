@@ -35,8 +35,8 @@ justify-content: space-between;
 }
 
 .container .logo {
-display: inline-block;
-cursor: pointer;
+margin-bottom: 10px;
+margin-bottom: 1px solid #999;
 }
 
 .searchbar {
@@ -176,9 +176,9 @@ object-fit: cover;
 
 .col-3 {
 width: 33%;
-position: -webkit-sticky;
-position: sticky;
+overflow-y:scroll;
 top: 90px;
+margin-top: 30px;
 }
 
 .form-group {
@@ -519,7 +519,7 @@ color: #ff0000;
 
 .image-select {
   width: 100%;
-  padding: 20px 0px;
+  padding: 10px 0px;
   text-align: center;
   background-color: #efefef;
   cursor: pointer;
@@ -527,4 +527,11 @@ color: #ff0000;
 .image-select svg {
   max-width: 50px;
   max-height: 150px;
+}
+
+.powered-by {
+}
+
+.about {
+  margin-bottom: 20px;
 }
