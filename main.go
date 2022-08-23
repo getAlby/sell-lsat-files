@@ -34,7 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 	logrus.Info("Opened database")
-	err = db.AutoMigrate(&UploadedFileMetadata{})
+	err = db.AutoMigrate(&UploadedFileMetadata{}, &Payment{})
 	if err != nil {
 		log.Fatal(err)
 	}

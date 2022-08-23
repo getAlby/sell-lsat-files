@@ -74,18 +74,27 @@ func (svc *Service) getMetadata(c *gin.Context) (response []IndexResponseEntry, 
 	}
 	return response, nil
 }
-func (svc *Service) UpdateFileMetadata(filename string) error {
+func (svc *Service) UpdateFileMetadata(filename string, lsat *ginlsat.LsatInfo) {
+	fmt.Println(lsat)
+	err := svc.DB.Create(&Payment{
+		ID:       lsat.Mac.PaymentHash.String(),
+		Amount:   int(lsat.Amount),
+		Preimage: lsat.Preimage.String(),
+		FilePath: filename,
+	}).Error
+	if err != nil {
+		logrus.Error(err)
+	}
 	fetched := &UploadedFileMetadata{}
-	err := svc.DB.First(fetched, &UploadedFileMetadata{
+	err = svc.DB.First(fetched, &UploadedFileMetadata{
 		Name: filename,
 	}).Error
 	if err != nil {
-		return err
+		logrus.Error(err)
 	}
 	fetched.NrOfDownloads += 1
 	//not fiat-proof, todo: fix
-	fetched.SatsEarned += fetched.Price
-	return svc.DB.Save(fetched).Error
+	fetched.SatsEarned += int(lsat.Amount)
 }
 
 func (svc *Service) AssetHandler(c *gin.Context) {
@@ -95,7 +104,7 @@ func (svc *Service) AssetHandler(c *gin.Context) {
 	}
 	if lsatInfo.Type == ginlsat.LSAT_TYPE_PAID {
 		c.File(fmt.Sprintf("%s/paid/%s", svc.Config.AssetDirName, c.Param("file")))
-		go svc.UpdateFileMetadata(c.Param("file"))
+		go svc.UpdateFileMetadata(c.Param("file"), lsatInfo)
 		return
 	}
 	c.File(fmt.Sprintf("%s/free/%s", svc.Config.AssetDirName, c.Param("file")))

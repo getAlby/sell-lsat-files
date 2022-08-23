@@ -29,3 +29,12 @@ type IndexResponseEntry struct {
 	SatsEarned    int
 	Currency      string
 }
+
+type Payment struct {
+	ID        string
+	Amount    int
+	Preimage  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	FilePath  string
+}
