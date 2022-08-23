@@ -17,7 +17,7 @@ function Image(props) {
         const objectUrl = await fetchImg(url, fetched.mac, fetched.preimage);
         img.current.src = objectUrl;
       } else {
-        img.current.src = `${url}?${Date.now()}`;
+        img.current.src = `${url}?v=${Date.now()}`;
       }
     }
     loadImage();
@@ -34,7 +34,7 @@ function Image(props) {
     }
 
     setLoading(true);
-    const resp = await fetch(`${url}?${Date.now()}`, {
+    const resp = await fetch(`${url}?v=${Date.now()}`, {
       headers: {
         "Accept": "application/vnd.lsat.v1.full"
       }
@@ -77,7 +77,7 @@ function Image(props) {
   }
 
   const fetchImg = async (url, mac, preimage) => {
-    const resp = await fetch(`${url}?${Date.now()}`, {
+    const resp = await fetch(`${url}?v=${Date.now()}`, {
       headers: {
         "Authorization": `LSAT ${mac}:${preimage}`
       }
