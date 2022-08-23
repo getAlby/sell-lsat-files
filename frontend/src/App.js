@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+import { Toaster } from 'react-hot-toast';
 import ImageList from "./ImageList";
 import Uploader from "./Uploader";
 
@@ -25,6 +26,7 @@ function App() {
 
   return (
     <main>
+      <div><Toaster/></div>
       <div className="container">
         <div className="col-9">
           <ImageList images={images} />

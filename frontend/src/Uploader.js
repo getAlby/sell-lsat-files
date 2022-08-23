@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-
+import toast from 'react-hot-toast';
 import {useDropzone} from 'react-dropzone';
 
 function Uploader(props) {
@@ -47,6 +47,9 @@ function Uploader(props) {
       const response = await axios.post("/upload", formData);
       window.scrollTo(0,0);
       setFile(null);
+      toast('Image successfully published!', {
+        icon: '👏',
+      });
       if (onUpload) {
         onUpload();
       }

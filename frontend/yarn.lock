@@ -4668,6 +4668,11 @@ globby@^11.0.4, globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
+goober@^2.1.10:
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/goober/-/goober-2.1.10.tgz#058def43ba1e3b06f973dbb372a4978aa42f1049"
+  integrity sha512-7PpuQMH10jaTWm33sQgBQvz45pHR8N4l3Cu3WMGEWmHShAcTuuP7I+5/DwKo39fwti5A80WAjvqgz6SSlgWmGA==
+
 graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.4, graceful-fs@^4.2.6, graceful-fs@^4.2.9:
   version "4.2.10"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
@@ -7342,6 +7347,13 @@ react-flip-move@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-flip-move/-/react-flip-move-3.0.4.tgz#261f66101fbc305f9b7b28959c5cf8236413ca74"
   integrity sha512-HyUVv9g3t/BS7Yz9HgrtYSWyRNdR2F81nkj+C5iRY675AwlqCLB5JU9mnZWg0cdVz7IM4iquoyZx70vzZv3Z8Q==
+
+react-hot-toast@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-hot-toast/-/react-hot-toast-2.3.0.tgz#70b3d183ac2a4afb6b17cda4a7f4cfe02e730415"
+  integrity sha512-/RxV+bfjld7tSJR1SCLzMAXgFuNW7fCpK6+vbYqfmbGSWcqTMz2rizrvfWKvtcPH5HK0NqxmBaC5SrAy1F42zA==
+  dependencies:
+    goober "^2.1.10"
 
 react-images-upload@^1.2.8:
   version "1.2.8"

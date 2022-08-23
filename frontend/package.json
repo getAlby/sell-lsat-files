@@ -12,6 +12,7 @@
     "react-dom": "^18.2.0",
     "react-drag-drop-files": "^2.3.7",
     "react-dropzone": "^14.2.2",
+    "react-hot-toast": "^2.3.0",
     "react-images-upload": "^1.2.8",
     "react-scripts": "5.0.1",
     "react-spinners": "^0.13.4",
