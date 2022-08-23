@@ -34,7 +34,7 @@ function Image(props) {
     }
 
     setLoading(true);
-    const resp = await fetch(url, {
+    const resp = await fetch(`${url}?${Date.now()}`, {
       headers: {
         "Accept": "application/vnd.lsat.v1.full"
       }
@@ -72,7 +72,7 @@ function Image(props) {
   }
 
   const fetchImg = async (url, mac, preimage) => {
-    const resp = await fetch(url, {
+    const resp = await fetch(`${url}?${Date.now()}`, {
       headers: {
         "Authorization": `LSAT ${mac}:${preimage}`
       }
