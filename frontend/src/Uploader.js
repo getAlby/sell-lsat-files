@@ -55,7 +55,8 @@ function Uploader(props) {
       }
     } catch(e) {
       console.log(e);
-      alert("Something went wrong. Please contact support@getalby.com");
+      const errorMessage = e.response?.data;
+      alert(`Something went wrong. ${errorMessage}.\nIf you need help, please contact support@getalby.com`);
     } finally {
       setUploading(false);
     }
