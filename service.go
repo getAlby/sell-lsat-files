@@ -15,7 +15,7 @@ import (
 
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/esimov/stackblur-go"
-	"github.com/getAlby/gin-lsat/ginlsat"
+	"github.com/getAlby/lsat-middleware/ginlsat"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 	"github.com/lightningnetwork/lnd/lnrpc"

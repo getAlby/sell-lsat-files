@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/getAlby/gin-lsat/ginlsat"
+	"github.com/getAlby/lsat-middleware/ginlsat"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
