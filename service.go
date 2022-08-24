@@ -225,7 +225,17 @@ func FetchInvoice(callback, comment string, satAmt int) (invoice string, err err
 	if err != nil {
 		return "", err
 	}
-	resp, err := http.Get(fmt.Sprintf("%s?amount=%d&comment=%s", callback, satAmt*MSAT_PER_SAT, url.QueryEscape(comment)))
+	parsed, err := url.Parse(callback)
+	if err != nil {
+		return "", err
+	}
+	q := parsed.Query()
+	q.Set("amount", strconv.Itoa(satAmt*MSAT_PER_SAT))
+	q.Set("comment", comment)
+	parsed.RawQuery = q.Encode()
+	url := parsed.String()
+	fmt.Println(url)
+	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
 	}
