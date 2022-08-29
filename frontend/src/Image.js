@@ -36,7 +36,7 @@ function Image(props) {
     setLoading(true);
     const resp = await fetch(`${url}?v=${Date.now()}`, {
       headers: {
-        "Accept": "application/vnd.lsat.v1.full"
+        "Accept-Authenticate": "LSAT"
       }
     });
     const header = resp.headers.get('www-authenticate');
