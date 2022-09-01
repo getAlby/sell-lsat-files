@@ -88,7 +88,12 @@ func (svc *Service) SearchAccounts(c *gin.Context) {
 		sortBy = "created_at"
 	}
 	resultList := []result{}
-	err := svc.DB.Select("sum(sats_earned) as earned, COUNT(*), ln_address").Where("ln_address like %?%", lnAddress).Order(fmt.Sprintf("%s des", sortBy)).Group("ln_address").Table("uploaded_file_metadata").Find(&resultList).Error
+	err := svc.DB.Select("sum(sats_earned) as earned, COUNT(*), ln_address").
+		Where("ln_address like ?", fmt.Sprintf("%%%s%%", lnAddress)).
+		Order(fmt.Sprintf("%s des", sortBy)).
+		Group("ln_address").
+		Table("uploaded_file_metadata").
+		Find(&resultList).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		c.String(http.StatusInternalServerError, "Something went wrong")
 		return
