@@ -43,7 +43,11 @@ type Service struct {
 }
 
 func (svc *Service) Index(c *gin.Context) {
-	resp, err := svc.getMetadata(c, "created_at desc", &UploadedFileMetadata{})
+	sortBy := c.Query("sort_by")
+	if sortBy == "" {
+		sortBy = "created_at"
+	}
+	resp, err := svc.getMetadata(c, fmt.Sprintf("%s desc", sortBy), &UploadedFileMetadata{})
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Something went wrong")
 	}
@@ -58,7 +62,11 @@ func (svc *Service) AccountIndex(c *gin.Context) {
 		c.String(http.StatusNotFound, "No account parameter")
 		return
 	}
-	resp, err := svc.getMetadata(c, "created_at desc", &UploadedFileMetadata{
+	sortBy := c.Query("sort_by")
+	if sortBy == "" {
+		sortBy = "created_at"
+	}
+	resp, err := svc.getMetadata(c, fmt.Sprintf("%s desc", sortBy), &UploadedFileMetadata{
 		LNAddress: accountName,
 	})
 	if err != nil {
