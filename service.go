@@ -28,7 +28,8 @@ import (
 )
 
 const (
-	MSAT_PER_SAT = 1000
+	MSAT_PER_SAT     = 1000
+	OBJECTS_PER_PAGE = 50
 )
 
 type Config struct {
@@ -47,9 +48,11 @@ func (svc *Service) Index(c *gin.Context) {
 	if sortBy == "" {
 		sortBy = "created_at"
 	}
+
 	resp, err := svc.getMetadata(c, fmt.Sprintf("%s desc", sortBy), &UploadedFileMetadata{})
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Something went wrong")
+		return
 	}
 	c.JSON(http.StatusOK, resp)
 }
@@ -114,8 +117,16 @@ func (svc *Service) AccountIndex(c *gin.Context) {
 }
 
 func (svc *Service) getMetadata(c *gin.Context, query string, search *UploadedFileMetadata) (response []IndexResponseEntry, err error) {
+	page := c.Query("page")
+	if page == "" {
+		page = "1"
+	}
+	pageNr, err := strconv.Atoi(page)
+	if err != nil || pageNr <= 0 {
+		return nil, err
+	}
 	entries := []UploadedFileMetadata{}
-	err = svc.DB.Order(query).Find(&entries, search).Error
+	err = svc.DB.Order(query).Find(&entries, search).Limit(OBJECTS_PER_PAGE).Offset(OBJECTS_PER_PAGE * (pageNr - 1)).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
