@@ -75,5 +75,11 @@ func main() {
 	router.StaticFile("/logo.png", "frontend/build/logo.png")
 	router.StaticFS("/static/", gin.Dir("frontend/build/static", false))
 
+	//API
+	//redundant routes, old ones to be deleted later
+	router.GET("/api/index", svc.Index)
+	router.POST("/api/upload", svc.Uploadfile)
+	router.GET("/api/accounts/:account", svc.AccountIndex)
+	router.GET("/api/accounts", svc.ListAccounts)
 	log.Fatal(router.Run(":8080"))
 }

@@ -43,15 +43,34 @@ type Service struct {
 }
 
 func (svc *Service) Index(c *gin.Context) {
-	resp, err := svc.getMetadata(c)
+	resp, err := svc.getMetadata(c, "created_at desc", &UploadedFileMetadata{})
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Something went wrong")
 	}
 	c.JSON(http.StatusOK, resp)
 }
-func (svc *Service) getMetadata(c *gin.Context) (response []IndexResponseEntry, err error) {
+
+func (svc *Service) ListAccounts(c *gin.Context) {
+}
+func (svc *Service) AccountIndex(c *gin.Context) {
+	accountName, found := c.Params.Get("account")
+	if !found {
+		c.String(http.StatusNotFound, "No account parameter")
+		return
+	}
+	resp, err := svc.getMetadata(c, "created_at desc", &UploadedFileMetadata{
+		LNAddress: accountName,
+	})
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Something went wrong")
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+func (svc *Service) getMetadata(c *gin.Context, query string, search *UploadedFileMetadata) (response []IndexResponseEntry, err error) {
 	entries := []UploadedFileMetadata{}
-	err = svc.DB.Order("created_at desc").Find(&entries, &UploadedFileMetadata{}).Error
+	err = svc.DB.Order(query).Find(&entries, search).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -59,21 +78,26 @@ func (svc *Service) getMetadata(c *gin.Context) (response []IndexResponseEntry, 
 
 	for _, e := range entries {
 		//switch order, newest first
-		response = append(response, IndexResponseEntry{
-			Id:            e.ID,
-			CreatedAt:     e.CreatedAt,
-			TimeAgo:       timeago.English.Format(e.CreatedAt),
-			URL:           fmt.Sprintf("%s://%s/assets/%s", svc.Config.Scheme, c.Request.Host, e.Name),
-			Name:          e.OriginalName,
-			LNAddress:     e.LNAddress,
-			Price:         e.Price,
-			NrOfDownloads: e.NrOfDownloads,
-			SatsEarned:    e.SatsEarned,
-			Currency:      e.Currency,
-		})
+		response = append(response, svc.convertResponse(e, c))
 	}
 	return response, nil
 }
+
+func (svc *Service) convertResponse(e UploadedFileMetadata, c *gin.Context) IndexResponseEntry {
+	return IndexResponseEntry{
+		Id:            e.ID,
+		CreatedAt:     e.CreatedAt,
+		TimeAgo:       timeago.English.Format(e.CreatedAt),
+		URL:           fmt.Sprintf("%s://%s/assets/%s", svc.Config.Scheme, c.Request.Host, e.Name),
+		Name:          e.OriginalName,
+		LNAddress:     e.LNAddress,
+		Price:         e.Price,
+		NrOfDownloads: e.NrOfDownloads,
+		SatsEarned:    e.SatsEarned,
+		Currency:      e.Currency,
+	}
+}
+
 func (svc *Service) UpdateFileMetadata(filename string) error {
 	fetched := &UploadedFileMetadata{}
 	err := svc.DB.First(fetched, &UploadedFileMetadata{
