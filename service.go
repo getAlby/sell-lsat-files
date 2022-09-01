@@ -126,14 +126,13 @@ func (svc *Service) getMetadata(c *gin.Context, query string, search *UploadedFi
 		return nil, err
 	}
 	entries := []UploadedFileMetadata{}
-	err = svc.DB.Order(query).Find(&entries, search).Limit(OBJECTS_PER_PAGE).Offset(OBJECTS_PER_PAGE * (pageNr - 1)).Error
+	err = svc.DB.Offset(OBJECTS_PER_PAGE*(pageNr-1)).Limit(OBJECTS_PER_PAGE).Order(query).Find(&entries, search).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 	response = []IndexResponseEntry{}
 
 	for _, e := range entries {
-		//switch order, newest first
 		response = append(response, svc.convertResponse(e, c))
 	}
 	return response, nil
