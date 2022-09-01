@@ -80,6 +80,7 @@ func main() {
 	router.GET("/api/index", svc.Index)
 	router.POST("/api/upload", svc.Uploadfile)
 	router.GET("/api/accounts/:account", svc.AccountIndex)
+	router.GET("/api/accounts/search", svc.SearchAccounts)
 	router.GET("/api/accounts", svc.ListAccounts)
 	log.Fatal(router.Run(":8080"))
 }

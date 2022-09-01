@@ -55,7 +55,44 @@ func (svc *Service) Index(c *gin.Context) {
 }
 
 func (svc *Service) ListAccounts(c *gin.Context) {
+	type result struct {
+		Earned    int
+		Count     int
+		LNAddress string
+	}
+	sortBy := c.Query("sort_by")
+	if sortBy == "" {
+		sortBy = "earned"
+	}
+	resultList := []result{}
+	err := svc.DB.Select("SUM(sats_earned) as earned, COUNT(*), ln_address").Order(fmt.Sprintf("%s desc", sortBy)).Group("ln_address").Table("uploaded_file_metadata").Find(&resultList).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		c.String(http.StatusInternalServerError, "Something went wrong")
+		return
+	}
+	c.JSON(http.StatusOK, resultList)
 }
+
+func (svc *Service) SearchAccounts(c *gin.Context) {
+	lnAddress := c.Query("ln_address")
+	type result struct {
+		Earned    int
+		Count     int
+		LNAddress string
+	}
+	sortBy := c.Query("sort_by")
+	if sortBy == "" {
+		sortBy = "created_at"
+	}
+	resultList := []result{}
+	err := svc.DB.Select("sum(sats_earned) as earned, COUNT(*), ln_address").Where("ln_address like %?%", lnAddress).Order(fmt.Sprintf("%s des", sortBy)).Group("ln_address").Table("uploaded_file_metadata").Find(&resultList).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		c.String(http.StatusInternalServerError, "Something went wrong")
+		return
+	}
+	c.JSON(http.StatusOK, resultList)
+}
+
 func (svc *Service) AccountIndex(c *gin.Context) {
 	accountName, found := c.Params.Get("account")
 	if !found {
