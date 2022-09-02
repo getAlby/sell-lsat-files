@@ -135,7 +135,7 @@ main .container {
   background-color: #fff;
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
   padding: 20px 0;
   border-radius: 2px;
   border: 1px solid rgb(218, 217, 217);

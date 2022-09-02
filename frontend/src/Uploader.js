@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useDropzone } from "react-dropzone";
 
 function Uploader(props) {
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [".png", ".gif", ".jpeg", ".jpg"] },
     maxFiles: 1,
     multiple: false,
@@ -46,7 +46,7 @@ function Uploader(props) {
     formData.append("ln_address", lnAddress);
     formData.append("price", price);
     try {
-      const response = await axios.post("/upload", formData);
+      await axios.post("/upload", formData);
       window.scrollTo(0, 0);
       setFile(null);
       toast("Image successfully published!", {
@@ -95,6 +95,7 @@ function Uploader(props) {
         <div className="preview">
           {file && (
             <img
+              alt="preview"
               src={file.preview}
               // Revoke data uri after image is loaded
               onLoad={() => {
