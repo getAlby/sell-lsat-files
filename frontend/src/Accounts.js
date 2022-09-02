@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-// import { Toaster } from "react-hot-toast";
-// import ImageList from "./ImageList";
-// import Uploader from "./Uploader";
-// import Pagination from "./Pagination";
-
 const load = async (sort) => {
   try {
     const apiURL = `https://insatgram.getalby.com/api/accounts?sort_by="${sort}"`;
@@ -28,21 +23,13 @@ function Accounts() {
     })();
   }, [sort]);
 
-  // const previousFnHandler = () => {
-  //   setPage((page) => page - 1);
-  // };
-
-  // const nextFnHandler = () => {
-  //   setPage((page) => page + 1);
-  // };
-
   return (
     <main>
       <div className="container">
         <table>
           <thead>
             <tr>
-              <th>Account</th>
+              <th></th>
               <th>
                 <button className="button" onClick={() => setSort("count")}>
                   Pictures
