@@ -8,7 +8,7 @@ import Pagination from "./Pagination";
 
 const load = async (page) => {
   try {
-    const apiURL = `https://insatgram.getalby.com/index?page=${page}`;
+    const apiURL = `/index?page=${page}`;
     const response = await axios.get(apiURL);
     return response.data;
   } catch (e) {
