@@ -6,24 +6,27 @@ import ImageList from "./ImageList";
 import Uploader from "./Uploader";
 import Pagination from "./Pagination";
 
+const load = async (page) => {
+  try {
+    const apiURL = `https://insatgram.getalby.com/index?page=${page}`;
+    const response = await axios.get(apiURL);
+    return response.data;
+  } catch (e) {
+    alert("Something went wrong. Please try again later");
+    console.error(e);
+  }
+};
+
 function App() {
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
 
-  const load = async () => {
-    try {
-      const apiURL = `https://insatgram.getalby.com/index?page=${page}`;
-      const response = await axios.get(apiURL);
-      setImages(response.data);
-    } catch (e) {
-      alert("Something went wrong. Please try again later");
-      console.error(e);
-    }
-  };
-
   useEffect(() => {
-    load();
-  }, []);
+    (async () => {
+      const images = await load(page);
+      setImages(images);
+    })();
+  }, [page]);
 
   const previousFnHandler = () => {
     console.log("previousFnHandler", page);
@@ -43,7 +46,11 @@ function App() {
 
       <div className="container">
         <div className="col-9">
-          <Pagination previousFn={previousFnHandler} nextFn={nextFnHandler} />
+          <Pagination
+            previousFn={previousFnHandler}
+            nextFn={nextFnHandler}
+            page={page}
+          />
           <ImageList images={images} />
           {/* <Pagination /> */}
         </div>

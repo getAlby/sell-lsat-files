@@ -1,11 +1,12 @@
-// import { useEffect, useRef, useState } from "react";
-
 function Pagination(props) {
-  const { previousFn, nextFn } = props;
+  const { page, previousFn, nextFn } = props;
 
   return (
     <div>
-      <button onClick={previousFn}>Previous</button>
+      <button disabled={page <= 1} onClick={previousFn}>
+        Previous
+      </button>
+      <span>Page: {page}</span>
       <button onClick={nextFn}>Next</button>
     </div>
   );
