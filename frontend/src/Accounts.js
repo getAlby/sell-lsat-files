@@ -6,9 +6,9 @@ import axios from "axios";
 // import Uploader from "./Uploader";
 // import Pagination from "./Pagination";
 
-const load = async (page) => {
+const load = async (sort) => {
   try {
-    const apiURL = "https://insatgram.getalby.com/api/accounts";
+    const apiURL = `https://insatgram.getalby.com/api/accounts?sort_by="${sort}"`;
     const response = await axios.get(apiURL);
     return response.data;
   } catch (e) {
@@ -19,14 +19,14 @@ const load = async (page) => {
 
 function Accounts() {
   const [accounts, setAccounts] = useState([]);
-  // const [page, setPage] = useState(1);
+  const [sort, setSort] = useState("earned");
 
   useEffect(() => {
     (async () => {
-      const images = await load();
+      const images = await load(sort);
       setAccounts(images);
     })();
-  }, []);
+  }, [sort]);
 
   // const previousFnHandler = () => {
   //   setPage((page) => page - 1);
@@ -38,13 +38,21 @@ function Accounts() {
 
   return (
     <main>
-      <div>
+      <div className="container">
         <table>
           <thead>
             <tr>
               <th>Account</th>
-              <th>Pictures</th>
-              <th>Sats</th>
+              <th>
+                <button className="button" onClick={() => setSort("count")}>
+                  Pictures
+                </button>
+              </th>
+              <th>
+                <button className="button" onClick={() => setSort("earned")}>
+                  Sats
+                </button>
+              </th>
             </tr>
           </thead>
 
@@ -59,7 +67,6 @@ function Accounts() {
           </tbody>
         </table>
       </div>
-      <div>{/* needed for page-layout */}</div>
     </main>
   );
 }
