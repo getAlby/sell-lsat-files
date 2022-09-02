@@ -2,12 +2,14 @@ function Pagination(props) {
   const { page, previousFn, nextFn } = props;
 
   return (
-    <div>
-      <button disabled={page <= 1} onClick={previousFn}>
+    <div className="pagination-wrapper">
+      <button className="button" disabled={page <= 1} onClick={previousFn}>
         Previous
       </button>
+      <button className="button" onClick={nextFn}>
+        Next
+      </button>
       <span>Page: {page}</span>
-      <button onClick={nextFn}>Next</button>
     </div>
   );
 }

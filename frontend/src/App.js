@@ -29,12 +29,10 @@ function App() {
   }, [page]);
 
   const previousFnHandler = () => {
-    console.log("previousFnHandler", page);
     setPage((page) => page - 1);
   };
 
   const nextFnHandler = () => {
-    console.log("nextFnHandler", page);
     setPage((page) => page + 1);
   };
 
@@ -51,8 +49,14 @@ function App() {
             nextFn={nextFnHandler}
             page={page}
           />
+
           <ImageList images={images} />
-          {/* <Pagination /> */}
+
+          <Pagination
+            previousFn={previousFnHandler}
+            nextFn={nextFnHandler}
+            page={page}
+          />
         </div>
 
         <div className="col-3">
