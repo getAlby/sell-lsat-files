@@ -2,8 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import Home from "./Home";
+import Accounts from "./Accounts";
 // import Account from "./Account";
-// import Accounts from "./Accounts";
 
 export default function Swap() {
   return (
@@ -13,10 +13,10 @@ export default function Swap() {
           <Route exact path="/">
             <Home />
           </Route>
-          {/* <Route path="/accounts">
+          <Route path="/accounts">
             <Accounts />
           </Route>
-          <Route path="/accounts/:account">
+          {/* <Route path="/accounts/:account">
             <Account />
           </Route> */}
         </Switch>
