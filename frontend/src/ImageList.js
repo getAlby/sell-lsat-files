@@ -32,6 +32,7 @@ function ImageList(props) {
           </div>
           <div className="bottom">
             <p className="likes">{image.NrOfDownloads} downloads</p>
+            <p className="likes">{image.SatsEarned} sats earned</p>
             <p className="message">
               <b>{image.TimeAgo}</b>
             </p>

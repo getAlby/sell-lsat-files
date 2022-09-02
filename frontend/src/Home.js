@@ -6,9 +6,9 @@ import ImageList from "./ImageList";
 import Uploader from "./Uploader";
 import Pagination from "./Pagination";
 
-const load = async (page) => {
+const load = async (page, sortBy) => {
   try {
-    const apiURL = `/index?page=${page}`;
+    const apiURL = `/index?page=${page}&sort_by=${sortBy}`;
     const response = await axios.get(apiURL);
     return response.data;
   } catch (e) {
@@ -20,13 +20,14 @@ const load = async (page) => {
 function Home() {
   const [images, setImages] = useState([]);
   const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState("sats_earned");
 
   useEffect(() => {
     (async () => {
-      const images = await load(page);
+      const images = await load(page, sortBy);
       setImages(images);
     })();
-  }, [page]);
+  }, [page, sortBy]);
 
   const previousFnHandler = () => {
     setPage((page) => page - 1);
