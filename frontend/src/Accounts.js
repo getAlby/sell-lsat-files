@@ -39,12 +39,27 @@ function Accounts() {
   return (
     <main>
       <div>
-        <h1>ACCOUNTS</h1>
-        {accounts.map((account) => (
-          <p key={account.LNAddress}>{account.LNAddress}</p>
-        ))}
+        <table>
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Pictures</th>
+              <th>Sats</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {accounts.map((account) => (
+              <tr key={account.LNAddress}>
+                <td>{account.LNAddress}</td>
+                <td>{account.Count}</td>
+                <td>{account.Earned}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <div></div>
+      <div>{/* needed for page-layout */}</div>
     </main>
   );
 }
