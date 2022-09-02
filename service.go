@@ -169,18 +169,28 @@ func (svc *Service) UpdateFileMetadata(filename string, lsatInfo *lsat.LsatInfo)
 	fetched.NrOfDownloads += 1
 	//create payment if none exists
 	dest := &Payment{}
-	tx := svc.DB.First(dest, &Payment{
+	search := &Payment{
 		Name:        filename,
 		PaymentHash: lsatInfo.PaymentHash.String(),
 		Preimage:    lsatInfo.Preimage.String(),
-	})
-	if tx.Error != nil {
-		return tx.Error
 	}
-	if tx.RowsAffected == 0 {
-		//not found, new payment so it was created
-		//so we increment the sats earned counter
-		fetched.SatsEarned += int(lsatInfo.Amount)
+	err = svc.DB.First(dest, search).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return err
+	}
+	if err == gorm.ErrRecordNotFound {
+		//not found, new payment so we create one
+		err = svc.DB.Create(&Payment{
+			Model:       gorm.Model{},
+			Name:        filename,
+			PaymentHash: lsatInfo.PaymentHash.String(),
+			Preimage:    lsatInfo.Preimage.String(),
+		}).Error
+		if err != nil {
+			return err
+		}
+		//and we increment the sats earned counter
+		fetched.SatsEarned += fetched.Price
 	}
 	return svc.DB.Save(fetched).Error
 }
