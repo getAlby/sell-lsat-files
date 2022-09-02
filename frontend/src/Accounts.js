@@ -3,7 +3,7 @@ import axios from "axios";
 
 const load = async (sort) => {
   try {
-    const apiURL = `https://insatgram.getalby.com/api/accounts?sort_by="${sort}"`;
+    const apiURL = `/api/accounts?sort_by="${sort}"`;
     const response = await axios.get(apiURL);
     return response.data;
   } catch (e) {
