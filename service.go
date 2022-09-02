@@ -15,7 +15,7 @@ import (
 
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/esimov/stackblur-go"
-	"github.com/getAlby/lsat-middleware/ginlsat"
+	"github.com/getAlby/lsat-middleware/lsat"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 	"github.com/lightningnetwork/lnd/lnrpc"
@@ -158,7 +158,7 @@ func (svc *Service) convertResponse(e UploadedFileMetadata, c *gin.Context) Inde
 	}
 }
 
-func (svc *Service) UpdateFileMetadata(filename string) error {
+func (svc *Service) UpdateFileMetadata(filename string, lsatInfo *lsat.LsatInfo) error {
 	fetched := &UploadedFileMetadata{}
 	err := svc.DB.First(fetched, &UploadedFileMetadata{
 		Name: filename,
@@ -167,19 +167,32 @@ func (svc *Service) UpdateFileMetadata(filename string) error {
 		return err
 	}
 	fetched.NrOfDownloads += 1
-	//not fiat-proof, todo: fix
-	fetched.SatsEarned += fetched.Price
+	//create payment if none exists
+	dest := &Payment{}
+	tx := svc.DB.First(dest, &Payment{
+		Name:        filename,
+		PaymentHash: lsatInfo.PaymentHash.String(),
+		Preimage:    lsatInfo.Preimage.String(),
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		//not found, new payment so it was created
+		//so we increment the sats earned counter
+		fetched.SatsEarned += int(lsatInfo.Amount)
+	}
 	return svc.DB.Save(fetched).Error
 }
 
 func (svc *Service) AssetHandler(c *gin.Context) {
-	lsatInfo := c.Value("LSAT").(*ginlsat.LsatInfo)
-	if lsatInfo.Type == ginlsat.LSAT_TYPE_ERROR {
+	lsatInfo := c.Value("LSAT").(*lsat.LsatInfo)
+	if lsatInfo.Type == lsat.LSAT_TYPE_ERROR {
 		logrus.Errorf("lsat error: %s for path %s", lsatInfo.Error, c.Request.URL.Path)
 	}
-	if lsatInfo.Type == ginlsat.LSAT_TYPE_PAID {
+	if lsatInfo.Type == lsat.LSAT_TYPE_PAID {
 		c.File(fmt.Sprintf("%s/paid/%s", svc.Config.AssetDirName, c.Param("file")))
-		go svc.UpdateFileMetadata(c.Param("file"))
+		go svc.UpdateFileMetadata(c.Param("file"), lsatInfo)
 		return
 	}
 	c.File(fmt.Sprintf("%s/free/%s", svc.Config.AssetDirName, c.Param("file")))

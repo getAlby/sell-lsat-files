@@ -17,6 +17,13 @@ type UploadedFileMetadata struct {
 	Currency      string
 }
 
+type Payment struct {
+	gorm.Model
+	Name        string
+	PaymentHash string
+	Preimage    string
+}
+
 type IndexResponseEntry struct {
 	Id            uint
 	CreatedAt     time.Time

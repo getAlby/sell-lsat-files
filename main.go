@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/getAlby/lsat-middleware/caveat"
 	"github.com/getAlby/lsat-middleware/ginlsat"
+	lsatmw "github.com/getAlby/lsat-middleware/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -34,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 	logrus.Info("Opened database")
-	err = db.AutoMigrate(&UploadedFileMetadata{})
+	err = db.AutoMigrate(&UploadedFileMetadata{}, &Payment{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,14 +55,18 @@ func main() {
 	}
 
 	//we are not using a predefined mw, but a custom one (svc is the ln client)
-	lsatmiddleware := &ginlsat.GinLsatMiddleware{}
+	lsatmiddleware := lsatmw.LsatMiddleware{}
 	lsatmiddleware.LNClient = svc
 	lsatmiddleware.AmountFunc = func(req *http.Request) (amount int64) {
 		//dummy, this will get overwritten by the LNClient anyway
 		return 1
 	}
+	lsatmiddleware.CaveatFunc = PathCaveat
+	ginLsat := &ginlsat.GinLsat{
+		Middleware: lsatmiddleware,
+	}
 
-	paid := router.Group("/assets", lsatmiddleware.Handler, cors.New(cors.Config{
+	paid := router.Group("/assets", ginLsat.Handler, cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods:    []string{"GET"},
 		AllowHeaders:    []string{"Accept", "Authorization"},
@@ -83,4 +89,13 @@ func main() {
 	router.GET("/api/accounts/search", svc.SearchAccounts)
 	router.GET("/api/accounts", svc.ListAccounts)
 	log.Fatal(router.Run(":8080"))
+}
+
+func PathCaveat(req *http.Request) []caveat.Caveat {
+	return []caveat.Caveat{
+		{
+			Condition: "REQUEST_PATH",
+			Value:     req.URL.Path,
+		},
+	}
 }
