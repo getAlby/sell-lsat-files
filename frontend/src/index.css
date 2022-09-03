@@ -556,3 +556,7 @@ a {
   align-items: baseline;
   gap: 10px;
 }
+
+td {
+  padding: 5px 20px;
+}

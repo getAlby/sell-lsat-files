@@ -8,7 +8,7 @@ import TableHeader from "./TableHeader";
 
 const load = async (page, sortBy) => {
   try {
-    const apiURL = `/index?page=${page}&sort_by=${sortBy}`;
+    const apiURL = `https://insatgram.getalby.com/index?page=${page}&sort_by=${sortBy}`;
     const response = await axios.get(apiURL);
     return response.data;
   } catch (e) {

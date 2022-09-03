@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 import axios from "axios";
 
 const load = async (sort) => {
   try {
-    const apiURL = `/api/accounts?sort_by="${sort}"`;
+    const apiURL = `https://insatgram.getalby.com/api/accounts?sort_by="${sort}"`;
     const response = await axios.get(apiURL);
     return response.data;
   } catch (e) {
@@ -46,7 +48,11 @@ function Accounts() {
           <tbody>
             {accounts.map((account) => (
               <tr key={account.LNAddress}>
-                <td>{account.LNAddress}</td>
+                <td>
+                  <Link to={`/accounts/${account.LNAddress}`}>
+                    {account.LNAddress}
+                  </Link>
+                </td>
                 <td>{account.Count}</td>
                 <td>{account.Earned}</td>
               </tr>

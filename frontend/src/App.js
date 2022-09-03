@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 import Home from "./Home";
 import Accounts from "./Accounts";
-// import Account from "./Account";
+import Account from "./Account";
 
 export default function Swap() {
   return (
@@ -26,12 +26,12 @@ export default function Swap() {
           <Route exact path="/">
             <Home />
           </Route>
-          <Route path="/accounts">
+          <Route exact path="/accounts">
             <Accounts />
           </Route>
-          {/* <Route path="/accounts/:account">
+          <Route path="/accounts/:account">
             <Account />
-          </Route> */}
+          </Route>
         </Switch>
       </Router>
     </div>
