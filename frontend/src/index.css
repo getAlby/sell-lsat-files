@@ -545,6 +545,12 @@ a {
   margin-bottom: 20px;
 }
 
+.table-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.sortby-wrapper,
 .pagination-wrapper {
   display: flex;
   align-items: baseline;

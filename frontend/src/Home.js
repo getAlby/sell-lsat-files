@@ -4,7 +4,7 @@ import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import ImageList from "./ImageList";
 import Uploader from "./Uploader";
-import Pagination from "./Pagination";
+import TableHeader from "./TableHeader";
 
 const load = async (page, sortBy) => {
   try {
@@ -37,6 +37,10 @@ function Home() {
     setPage((page) => page + 1);
   };
 
+  const sortByFnHandler = (value) => {
+    setSortBy(value);
+  };
+
   return (
     <main>
       <div>
@@ -45,18 +49,22 @@ function Home() {
 
       <div className="container">
         <div className="col-9">
-          <Pagination
+          <TableHeader
             previousFn={previousFnHandler}
             nextFn={nextFnHandler}
             page={page}
+            sortByFn={sortByFnHandler}
+            sortBy={sortBy}
           />
 
           <ImageList images={images} />
 
-          <Pagination
+          <TableHeader
             previousFn={previousFnHandler}
             nextFn={nextFnHandler}
             page={page}
+            sortByFn={sortByFnHandler}
+            sortBy={sortBy}
           />
         </div>
 
