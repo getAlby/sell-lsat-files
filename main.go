@@ -10,6 +10,7 @@ import (
 	"github.com/getAlby/lsat-middleware/ginlsat"
 	lsatmw "github.com/getAlby/lsat-middleware/middleware"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -66,6 +67,11 @@ func main() {
 		Middleware: lsatmiddleware,
 	}
 
+	wwwroot := static.LocalFile("./frontend/build", true)
+	router.Use(static.Serve("/", wwwroot))
+	router.Use(static.Serve("/accounts", wwwroot))
+	router.GET("/accounts/:account", func(ctx *gin.Context) { ctx.File("./frontend/build/index.html") })
+
 	paid := router.Group("/assets", ginLsat.Handler, cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods:    []string{"GET"},
@@ -75,11 +81,6 @@ func main() {
 	router.Use(cors.Default())
 
 	paid.GET("/:file", svc.AssetHandler)
-	router.POST("/upload", svc.Uploadfile)
-	router.GET("/index", svc.Index)
-	router.StaticFile("/", "frontend/build/index.html")
-	router.StaticFile("/logo.png", "frontend/build/logo.png")
-	router.StaticFS("/static/", gin.Dir("frontend/build/static", false))
 
 	//API
 	//redundant routes, old ones to be deleted later

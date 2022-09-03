@@ -46,7 +46,7 @@ function Uploader(props) {
     formData.append("ln_address", lnAddress);
     formData.append("price", price);
     try {
-      await axios.post("/upload", formData);
+      await axios.post("/api/upload", formData);
       window.scrollTo(0, 0);
       setFile(null);
       toast("Image successfully published!", {
