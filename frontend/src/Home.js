@@ -6,7 +6,7 @@ import ImageList from "./ImageList";
 import Uploader from "./Uploader";
 import TableHeader from "./TableHeader";
 
-const load = async (page, sortBy) => {
+const load = async (page = 1, sortBy = "sats_earned") => {
   try {
     const apiURL = `https://insatgram.getalby.com/api/index?page=${page}&sort_by=${sortBy}`;
     const response = await axios.get(apiURL);
