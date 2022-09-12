@@ -41,10 +41,15 @@ function Home() {
     setSortBy(value);
   };
 
+  const loadRecent = async () => {
+    const images = await load(1, 'created_at');
+    setImages(images);
+  }
+
   return (
     <main>
       <div>
-        <Toaster />
+        <Toaster position="bottom-center" />
       </div>
 
       <div className="container">
@@ -86,7 +91,7 @@ function Home() {
               </small>
             </div>
 
-            <Uploader onUpload={load} />
+            <Uploader onUpload={loadRecent} />
           </div>
 
           <div className="footer">
