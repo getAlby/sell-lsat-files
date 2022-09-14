@@ -207,7 +207,7 @@ func (svc *Service) AssetHandler(c *gin.Context) {
 		logrus.Errorf("lsat error: %s for path %s", lsatInfo.Error, c.Request.URL.Path)
 	}
 	if lsatInfo.Type == lsat.LSAT_TYPE_PAID {
-		result, err := svc.S3Client.GetObject(&s3.GetObjectInput{Bucket: &svc.Config.BucketName, Key: aws.String(fmt.Sprintf("free/%s", c.Param("file")))})
+		result, err := svc.S3Client.GetObject(&s3.GetObjectInput{Bucket: &svc.Config.BucketName, Key: aws.String(fmt.Sprintf("paid/%s", c.Param("file")))})
 		if err != nil {
 			logrus.Error(err)
 			c.String(http.StatusInternalServerError, "something went wrong")
