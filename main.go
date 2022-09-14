@@ -75,7 +75,8 @@ func main() {
 	paid := router.Group("/assets", ginLsat.Handler, cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods:    []string{"GET"},
-		AllowHeaders:    []string{"Accept", "Authorization"},
+		AllowHeaders:    []string{"Accept", "Authorization", "Accept-Authenticate"},
+		ExposeHeaders:   []string{"www-authenticate"},
 	}))
 
 	router.Use(cors.Default())
