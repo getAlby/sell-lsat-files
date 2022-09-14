@@ -20,6 +20,5 @@ FROM alpine as final
 
 # Copy the binaries and entrypoint from the builder image.
 COPY --from=builder /build/main /bin/
-COPY --from=builder /build/frontend/build /frontend/build
 
 ENTRYPOINT [ "/bin/main" ]
