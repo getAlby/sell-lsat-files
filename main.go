@@ -47,7 +47,7 @@ func main() {
 	// The session the S3 Uploader will use
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: credentials.NewStaticCredentials(c.S3Key, c.S3Secret, ""),
-		Endpoint:    aws.String("https://nyc3.digitaloceanspaces.com"),
+		Endpoint:    aws.String("https://fra1.digitaloceanspaces.com"),
 		Region:      aws.String("us-east-1"),
 	})
 	if err != nil {

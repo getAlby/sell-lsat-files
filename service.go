@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -10,7 +11,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 
@@ -232,12 +232,8 @@ func (svc *Service) BlurImg(f multipart.File, name string) error {
 	if err != nil {
 		return err
 	}
-	temp, err := os.Create(fmt.Sprintf("temp_%s", name))
-	if err != nil {
-		return err
-	}
-	defer os.Remove(fmt.Sprintf("temp_%s", name))
-	err = jpeg.Encode(temp, result, &jpeg.Options{Quality: jpeg.DefaultQuality})
+	buf := new(bytes.Buffer)
+	err = jpeg.Encode(buf, result, &jpeg.Options{Quality: jpeg.DefaultQuality})
 	if err != nil {
 		return err
 	}
@@ -245,7 +241,7 @@ func (svc *Service) BlurImg(f multipart.File, name string) error {
 	_, err = svc.S3Client.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(svc.Config.BucketName),
 		Key:    aws.String(fmt.Sprintf("free/%s", name)),
-		Body:   temp,
+		Body:   bytes.NewReader(buf.Bytes()),
 	})
 	return err
 }
@@ -295,6 +291,7 @@ func (svc *Service) Uploadfile(c *gin.Context) {
 	_, err = svc.S3Client.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(svc.Config.BucketName),
 		Key:    aws.String(fmt.Sprintf("paid/%s", totalName)),
+		ACL:    aws.String("private"),
 		Body:   f,
 	})
 	if err != nil {
@@ -302,7 +299,12 @@ func (svc *Service) Uploadfile(c *gin.Context) {
 		return
 	}
 	//blur the file and save the blurred file as well
-	err = svc.BlurImg(f, totalName)
+	f2, err := file.Open()
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	err = svc.BlurImg(f2, totalName)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
