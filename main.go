@@ -89,6 +89,11 @@ func main() {
 	router.GET("/api/accounts/:account", svc.AccountIndex)
 	router.GET("/api/accounts/search", svc.SearchAccounts)
 	router.GET("/api/accounts", svc.ListAccounts)
+
+	//redirect homepage to new location
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusFound, "https://insatgram-one.vercel.app")
+	})
 	log.Fatal(router.Run(":8080"))
 }
 
