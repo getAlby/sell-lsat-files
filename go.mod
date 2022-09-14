@@ -20,10 +20,13 @@ require (
 	gorm.io/gorm v1.23.8
 )
 
+require github.com/jmespath/go-jmespath v0.4.0 // indirect
+
 require (
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/aead/siphash v1.0.1 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/aws/aws-sdk-go v1.44.97
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.1 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.2 // indirect

@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/getAlby/lsat-middleware/caveat"
 	"github.com/getAlby/lsat-middleware/ginlsat"
 	lsatmw "github.com/getAlby/lsat-middleware/middleware"
@@ -41,18 +44,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// The session the S3 Uploader will use
+	sess, err := session.NewSession(&aws.Config{
+		Credentials: credentials.NewStaticCredentials(c.S3Key, c.S3Secret, ""),
+		Endpoint:    aws.String("https://nyc3.digitaloceanspaces.com"),
+		Region:      aws.String("us-east-1"),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	s3Client := s3.New(sess)
+
 	svc := &Service{
-		DB:     db,
-		Config: c,
-	}
-	//create free and paid dirs
-	err = os.MkdirAll(fmt.Sprintf("%s/free", svc.Config.AssetDirName), os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = os.MkdirAll(fmt.Sprintf("%s/paid", svc.Config.AssetDirName), os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
+		S3Client: s3Client,
+		DB:       db,
+		Config:   c,
 	}
 
 	//we are not using a predefined mw, but a custom one (svc is the ln client)

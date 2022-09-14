@@ -7,12 +7,15 @@ import (
 	"image"
 	"image/jpeg"
 	_ "image/png"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/esimov/stackblur-go"
 	"github.com/getAlby/lsat-middleware/lsat"
@@ -33,14 +36,17 @@ const (
 )
 
 type Config struct {
-	DatabaseUrl  string `envconfig:"DATABASE_URL" required:"true"`
-	AssetDirName string `envconfig:"ASSET_DIR_NAME" default:"assets"`
-	StaticDir    string `envconfig:"STATIC_DIR_NAME" default:"static"`
-	Scheme       string `envconfig:"SCHEME" default:"https"`
+	DatabaseUrl string `envconfig:"DATABASE_URL" required:"true"`
+	StaticDir   string `envconfig:"STATIC_DIR_NAME" default:"static"`
+	Scheme      string `envconfig:"SCHEME" default:"https"`
+	BucketName  string `envconfig:"BUCKET_NAME"`
+	S3Key       string `envconfig:"S3_KEY"`
+	S3Secret    string `envconfig:"S3_SECRET"`
 }
 type Service struct {
-	DB     *gorm.DB
-	Config *Config
+	DB       *gorm.DB
+	S3Client *s3.S3
+	Config   *Config
 }
 
 func (svc *Service) Index(c *gin.Context) {
@@ -201,24 +207,47 @@ func (svc *Service) AssetHandler(c *gin.Context) {
 		logrus.Errorf("lsat error: %s for path %s", lsatInfo.Error, c.Request.URL.Path)
 	}
 	if lsatInfo.Type == lsat.LSAT_TYPE_PAID {
-		c.File(fmt.Sprintf("%s/paid/%s", svc.Config.AssetDirName, c.Param("file")))
+		result, err := svc.S3Client.GetObject(&s3.GetObjectInput{Bucket: &svc.Config.BucketName, Key: aws.String(fmt.Sprintf("free/%s", c.Param("file")))})
+		if err != nil {
+			logrus.Error(err)
+			c.String(http.StatusInternalServerError, "something went wrong")
+			return
+		}
+		c.DataFromReader(http.StatusOK, *result.ContentLength, *result.ContentType, result.Body, nil)
 		go svc.UpdateFileMetadata(c.Param("file"), lsatInfo)
 		return
 	}
-	c.File(fmt.Sprintf("%s/free/%s", svc.Config.AssetDirName, c.Param("file")))
+	result, err := svc.S3Client.GetObject(&s3.GetObjectInput{Bucket: &svc.Config.BucketName, Key: aws.String(fmt.Sprintf("free/%s", c.Param("file")))})
+	if err != nil {
+		logrus.Error(err)
+		c.String(http.StatusInternalServerError, "something went wrong")
+		return
+	}
+	c.DataFromReader(http.StatusOK, *result.ContentLength, *result.ContentType, result.Body, nil)
 }
 
-func (svc *Service) BlurImg(filepath string) error {
-	imagePath, _ := os.Open(filepath)
-	defer imagePath.Close()
-	srcImage, _, _ := image.Decode(imagePath)
+func (svc *Service) BlurImg(f multipart.File, name string) error {
+	srcImage, _, _ := image.Decode(f)
 	result, err := stackblur.Process(srcImage, 100)
 	if err != nil {
 		return err
 	}
-	newImage, _ := os.Create(strings.Replace(filepath, "/paid", "/free", 1))
-	defer newImage.Close()
-	return jpeg.Encode(newImage, result, &jpeg.Options{Quality: jpeg.DefaultQuality})
+	temp, err := os.Create(fmt.Sprintf("temp_%s", name))
+	if err != nil {
+		return err
+	}
+	defer os.Remove(fmt.Sprintf("temp_%s", name))
+	err = jpeg.Encode(temp, result, &jpeg.Options{Quality: jpeg.DefaultQuality})
+	if err != nil {
+		return err
+	}
+	// Upload the file to S3.
+	_, err = svc.S3Client.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(svc.Config.BucketName),
+		Key:    aws.String(fmt.Sprintf("free/%s", name)),
+		Body:   temp,
+	})
+	return err
 }
 
 func (svc *Service) Uploadfile(c *gin.Context) {
@@ -256,14 +285,24 @@ func (svc *Service) Uploadfile(c *gin.Context) {
 		Price:        price,
 		Currency:     "BTC",
 	})
-	// Upload the file to specific dst.
-	err = c.SaveUploadedFile(file, fmt.Sprintf("%s/paid/%s", svc.Config.AssetDirName, totalName))
+	// Upload the file to S3.
+	f, err := file.Open()
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	// Upload the file to S3.
+	_, err = svc.S3Client.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(svc.Config.BucketName),
+		Key:    aws.String(fmt.Sprintf("paid/%s", totalName)),
+		Body:   f,
+	})
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 	//blur the file and save the blurred file as well
-	err = svc.BlurImg(fmt.Sprintf("%s/paid/%s", svc.Config.AssetDirName, totalName))
+	err = svc.BlurImg(f, totalName)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
