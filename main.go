@@ -13,7 +13,6 @@ import (
 	"github.com/getAlby/lsat-middleware/ginlsat"
 	lsatmw "github.com/getAlby/lsat-middleware/middleware"
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -72,11 +71,6 @@ func main() {
 	ginLsat := &ginlsat.GinLsat{
 		Middleware: lsatmiddleware,
 	}
-
-	wwwroot := static.LocalFile("./frontend/build", true)
-	router.Use(static.Serve("/", wwwroot))
-	router.Use(static.Serve("/accounts", wwwroot))
-	router.GET("/accounts/:account", func(ctx *gin.Context) { ctx.File("./frontend/build/index.html") })
 
 	paid := router.Group("/assets", ginLsat.Handler, cors.New(cors.Config{
 		AllowAllOrigins: true,
