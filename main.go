@@ -91,6 +91,9 @@ func main() {
 	router.GET("/api/accounts/search", svc.SearchAccounts)
 	router.GET("/api/accounts", svc.ListAccounts)
 
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.String(http.StatusOK, svc.Config.DefaultMsg)
+	})
 	log.Fatal(router.Run(":8080"))
 }
 

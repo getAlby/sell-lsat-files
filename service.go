@@ -42,6 +42,7 @@ type Config struct {
 	BucketName  string `envconfig:"BUCKET_NAME"`
 	S3Key       string `envconfig:"S3_KEY"`
 	S3Secret    string `envconfig:"S3_SECRET"`
+	DefaultMsg  string `envconfig:"DEFAULT_MSG"`
 }
 type Service struct {
 	DB       *gorm.DB
