@@ -92,7 +92,7 @@ func main() {
 	router.GET("/api/accounts", svc.ListAccounts)
 
 	router.GET("/", func(ctx *gin.Context) {
-		ctx.Header("Content-Type", "txt/html")
+		ctx.Header("Content-Type", "text/html")
 		ctx.String(http.StatusOK, svc.Config.DefaultMsg)
 	})
 	log.Fatal(router.Run(":8080"))
