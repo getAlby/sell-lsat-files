@@ -92,8 +92,7 @@ func main() {
 	router.GET("/api/accounts", svc.ListAccounts)
 
 	router.GET("/", func(ctx *gin.Context) {
-		ctx.Header("Content-Type", "text/html")
-		ctx.String(http.StatusOK, svc.Config.DefaultMsg)
+		ctx.Redirect(http.StatusMovedPermanently, "https://nakaphoto.vercel.app/")
 	})
 	log.Fatal(router.Run(":8080"))
 }
